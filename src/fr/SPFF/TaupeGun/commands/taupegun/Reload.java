@@ -1,4 +1,4 @@
-package fr.SPFF.TaupeGun.commands;
+package fr.SPFF.TaupeGun.commands.taupegun;
 
 import fr.SPFF.TaupeGun.utils.Message;
 import org.bukkit.command.CommandSender;
@@ -8,9 +8,9 @@ import java.io.IOException;
 
 class Reload {
 
-    private final Executor executor;
+    private final TaupeGunExecutor executor;
 
-    Reload(final Executor executor) {
+    Reload(final TaupeGunExecutor executor) {
         this.executor = executor;
     }
 

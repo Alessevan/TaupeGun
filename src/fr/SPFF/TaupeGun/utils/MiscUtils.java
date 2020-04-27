@@ -19,8 +19,12 @@ public class MiscUtils {
 
     public static List<Teams> shuffleTeams(final List<Teams> list){
         final List<Teams> shuffled = new ArrayList<>();
-        while(list.size() > 0){
-            shuffled.add(list.remove(new Random().nextInt(list.size())));
+        final List<Teams> clone = new ArrayList<>();
+        for(final Teams team : list){
+            clone.add(team);
+        }
+        while(clone.size() > 0){
+            shuffled.add(clone.remove(new Random().nextInt(clone.size())));
         }
         return shuffled;
     }

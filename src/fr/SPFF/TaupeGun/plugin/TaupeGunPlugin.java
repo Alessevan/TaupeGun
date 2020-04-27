@@ -1,6 +1,9 @@
 package fr.SPFF.TaupeGun.plugin;
 
-import fr.SPFF.TaupeGun.commands.Executor;
+import fr.SPFF.TaupeGun.commands.claim.ClaimExecutor;
+import fr.SPFF.TaupeGun.commands.reveal.RevealExecutor;
+import fr.SPFF.TaupeGun.commands.taupegun.TaupeGunExecutor;
+import fr.SPFF.TaupeGun.commands.tcommand.TExecutor;
 import fr.SPFF.TaupeGun.game.TaupeGunManager;
 import fr.SPFF.TaupeGun.listeners.Listening;
 import fr.SPFF.TaupeGun.utils.FileManager;
@@ -45,7 +48,10 @@ public class TaupeGunPlugin extends JavaPlugin {
                 "  |____|  (____  /____/|   __/ \\___  >  \\______  /____/|___|  /\n" +
                 "               \\/      |__|        \\/          \\/           \\/ \n");
 
-        new Executor();
+        new TaupeGunExecutor();
+        new TExecutor();
+        new ClaimExecutor();
+        new RevealExecutor();
         new Listening();
 
         this.taupeGunManager = new TaupeGunManager();

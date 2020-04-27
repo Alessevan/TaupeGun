@@ -10,3 +10,9 @@ softdepend: # On charge le plugin ceux là :
 commands:
   taupegun:
     description: "Command to use plugin TaupeGunPlugin"
+  t:
+    description: "Command for a taupe to speak to others of her taupes' team"
+  claim:
+    description: "Command for a taupe to give her a stuff"
+  reveal:
+    description: "Command for a taupe to reveal another taupe"

@@ -1,13 +1,13 @@
-package fr.SPFF.TaupeGun.commands;
+package fr.SPFF.TaupeGun.commands.taupegun;
 
 import fr.SPFF.TaupeGun.utils.Message;
 import org.bukkit.entity.Player;
 
 class Spawn {
 
-    private final Executor executor;
+    private final TaupeGunExecutor executor;
 
-    Spawn(final Executor executor) {
+    Spawn(final TaupeGunExecutor executor) {
         this.executor = executor;
     }
 

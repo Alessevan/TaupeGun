@@ -10,7 +10,10 @@ public enum TeamsColor {
     BLUE(3),
     GOLD(4),
     CYAN(5),
-    TAUPE(6);
+    AQUA(6),
+    LIGHT_PURPLE(7),
+    GREEN(8),
+    TAUPE(9999);
 
     private final int value;
 
@@ -37,6 +40,12 @@ public enum TeamsColor {
             case 5:
                 return ChatColor.DARK_AQUA;
             case 6:
+                return ChatColor.AQUA;
+            case 7:
+                return ChatColor.LIGHT_PURPLE;
+            case 8:
+                return ChatColor.GREEN;
+            case 9999:
                 return ChatColor.DARK_RED;
             default:
                 return ChatColor.MAGIC;
@@ -58,6 +67,12 @@ public enum TeamsColor {
             case 5:
                 return TeamsColor.CYAN;
             case 6:
+                return TeamsColor.AQUA;
+            case 7:
+                return TeamsColor.LIGHT_PURPLE;
+            case 8:
+                return TeamsColor.GREEN;
+            case 9999:
                 return TeamsColor.TAUPE;
             default:
                 return null;

@@ -1,4 +1,4 @@
-package fr.SPFF.TaupeGun.commands;
+package fr.SPFF.TaupeGun.commands.taupegun;
 
 import fr.SPFF.TaupeGun.plugin.TaupeGunPlugin;
 import fr.SPFF.TaupeGun.utils.Message;
@@ -7,11 +7,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class Executor implements CommandExecutor {
+public class TaupeGunExecutor implements CommandExecutor {
 
     private final TaupeGunPlugin main;
 
-    public Executor() {
+    public TaupeGunExecutor() {
         this.main = TaupeGunPlugin.getInstance();
         this.main.getCommand("taupegun").setExecutor(this);
     }

@@ -40,11 +40,19 @@ public class Teams {
         return players;
     }
 
+    public boolean isFull(){
+        return (color.equals(TeamsColor.TAUPE) ? this.getPlayers().size() == Teams.teamsList.size() / 2 : this.getPlayers().size() == this.main.getServer().getOnlinePlayers().size() / Teams.teamsList.size());
+    }
+
     public static Teams getPlayerTeam(final Player player){
         return Teams.teamsList.parallelStream().filter(team -> team.players.contains(player)).findFirst().orElseGet(null);
     }
 
     public static Teams getPlayerTeam(final PlayerTaupe player){
         return Teams.teamsList.parallelStream().filter(team -> team.players.contains(player.getPlayer())).findFirst().orElseGet(null);
+    }
+
+    public static List<Teams> getTeams(){
+        return Teams.teamsList;
     }
 }

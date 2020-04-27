@@ -5,6 +5,7 @@ import fr.SPFF.TaupeGun.game.TaupeGunManager;
 import fr.SPFF.TaupeGun.listeners.Listening;
 import fr.SPFF.TaupeGun.utils.FileManager;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,6 +19,8 @@ public class TaupeGunPlugin extends JavaPlugin {
     private TaupeGunManager taupeGunManager;
 
     private FileManager fileManager;
+
+    private World world;
 
     @Override
     public void onEnable() {
@@ -33,6 +36,7 @@ public class TaupeGunPlugin extends JavaPlugin {
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
+        this.world = this.getServer().getWorlds().parallelStream().filter(world -> world.getName().equalsIgnoreCase(this.fileManager.getFile("data").getString("world"))).findFirst().get();
         this.getLogger().info("\n" +
                 "___________                              ________              \n" +
                 "\\__    ___/____   __ ________   ____    /  _____/ __ __  ____  \n" +
@@ -57,5 +61,9 @@ public class TaupeGunPlugin extends JavaPlugin {
 
     public TaupeGunManager getTaupeGunManager() {
         return this.taupeGunManager;
+    }
+
+    public World getWorld(){
+        return this.world;
     }
 }

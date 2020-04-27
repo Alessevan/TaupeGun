@@ -4,8 +4,10 @@ import fr.SPFF.TaupeGun.plugin.TaupeGunPlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class Listening implements Listener {
 
@@ -24,6 +26,16 @@ public class Listening implements Listener {
     @EventHandler
     public void onEntityDamage(final EntityDamageEvent e){
         new EntityDamage(this).handle(e);
+    }
+
+    @EventHandler
+    public void onPlayerDeath(final PlayerDeathEvent e){
+        new PlayerDeath(this).handle(e);
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(final PlayerRespawnEvent e){
+        new PlayerRespawn(this).handle(e);
     }
 
     @EventHandler

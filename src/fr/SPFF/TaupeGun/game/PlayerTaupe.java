@@ -16,12 +16,12 @@ public class PlayerTaupe {
 
     private final Player player;
     private Teams teams;
-    private boolean taupe;
+    private Teams taupe;
 
     public PlayerTaupe(Player player) {
         this.player = player;
         PlayerTaupe.playerTaupeList.add(this);
-        this.taupe = false;
+        this.taupe = null;
     }
 
     public Player getPlayer(){
@@ -29,11 +29,11 @@ public class PlayerTaupe {
     }
 
     public boolean isTaupe() {
-        return this.taupe;
+        return this.taupe != null;
     }
 
-    public void setTaupe(final boolean taupe){
-        this.taupe = taupe;
+    public void setTaupe(final Teams teams){
+        this.taupe = teams;
     }
 
     public Teams getTeam(){

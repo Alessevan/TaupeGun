@@ -15,5 +15,8 @@ class EntityDamage {
         if(this.listening.getMain().getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING)){
             e.setCancelled(true);
         }
+        if(e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && this.listening.getMain().getTaupeGunManager().getTimer() <= 10 * 10){
+            e.setCancelled(true);
+        }
     }
 }

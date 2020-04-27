@@ -1,42 +1,50 @@
 package fr.SPFF.TaupeGun.game;
 
-import org.bukkit.ChatColor;
+import fr.SPFF.TaupeGun.plugin.TaupeGunPlugin;
+import org.bukkit.entity.Player;
 
-public enum Teams {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-    WHITE(0),
-    DARK_GRAY(1),
-    RED(2),
-    BLUE(3),
-    GOLD(4),
-    CYAN(5);
+public class Teams {
 
-    private final int value;
+    private final static List<Teams> teamsList;
 
-    Teams(final int value){
-        this.value = value;
+    static {
+        teamsList = new ArrayList<>();
     }
 
-    public int getValue(){
-        return this.value;
+    private final TaupeGunPlugin main;
+    private final TeamsColor color;
+    final List<Player> players;
+
+    public Teams(boolean isTaupe){
+        this.main = TaupeGunPlugin.getInstance();
+        if(isTaupe) color = TeamsColor.TAUPE;
+        else color = this.main.getTaupeGunManager().getAvailableColors().remove(new Random().nextInt(this.main.getTaupeGunManager().getAvailableColors().size()));
+        this.players = new ArrayList<>();
+        Teams.teamsList.add(this);
     }
 
-    public static ChatColor getColor(final int value){
-        switch(value){
-            case 0:
-                return ChatColor.WHITE;
-            case 1:
-                return ChatColor.DARK_GRAY;
-            case 2:
-                return ChatColor.RED;
-            case 3:
-                return ChatColor.BLUE;
-            case 4:
-                return ChatColor.GOLD;
-            case 5:
-                return ChatColor.DARK_AQUA;
-            default:
-                return ChatColor.MAGIC;
-        }
+    public void destroy(){
+        this.players.clear();
+        Teams.teamsList.remove(this);
+    }
+
+    public TeamsColor getColor() {
+        return color;
+    }
+
+    public List<Player> getPlayers() {
+        return players;
+    }
+
+    public static Teams getPlayerTeam(final Player player){
+        return Teams.teamsList.parallelStream().filter(team -> team.players.contains(player)).findFirst().orElseGet(null);
+    }
+
+    public static Teams getPlayerTeam(final PlayerTaupe player){
+        return Teams.teamsList.parallelStream().filter(team -> team.players.contains(player.getPlayer())).findFirst().orElseGet(null);
     }
 }

@@ -1,5 +1,6 @@
 package fr.SPFF.TaupeGun.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -51,6 +52,12 @@ public class Message {
     public void sendMessage(final CommandSender target) {
         for (final String string : this.lines) {
             target.sendMessage(ChatColor.translateAlternateColorCodes('&', string));
+        }
+    }
+
+    public void broadcast(){
+        for (final String string : this.lines) {
+            Bukkit.broadcastMessage(ChatColor.translateAlternateColorCodes('&', string));
         }
     }
 

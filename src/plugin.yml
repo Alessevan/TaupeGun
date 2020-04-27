@@ -1,7 +1,12 @@
 main: fr.SPFF.TaupeGun.plugin.TaupeGunPlugin
 name: TaupeGunPlugin
 version: 0.0.1
-authors: [Aless#6161, Marco#1398]
-comands:
+api-version: "1.15"
+authors: ['Aless#6161', 'Marco#1398']
+load: POSTWORLD
+softdepend: # On charge le plugin ceux là :
+  - MultiWorld
+  - MultiverseCore
+commands:
   taupegun:
     description: "Command to use plugin TaupeGunPlugin"

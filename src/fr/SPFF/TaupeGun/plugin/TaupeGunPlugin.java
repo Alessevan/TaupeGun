@@ -1,6 +1,7 @@
 package fr.SPFF.TaupeGun.plugin;
 
 import fr.SPFF.TaupeGun.commands.Executor;
+import fr.SPFF.TaupeGun.game.TaupeGunManager;
 import fr.SPFF.TaupeGun.listeners.Listening;
 import fr.SPFF.TaupeGun.utils.FileManager;
 import org.bukkit.ChatColor;
@@ -13,6 +14,8 @@ import java.util.logging.Level;
 public class TaupeGunPlugin extends JavaPlugin {
 
     private static TaupeGunPlugin instance;
+
+    private TaupeGunManager taupeGunManager;
 
     private FileManager fileManager;
 
@@ -40,6 +43,8 @@ public class TaupeGunPlugin extends JavaPlugin {
 
         new Executor();
         new Listening();
+
+        this.taupeGunManager = new TaupeGunManager();
     }
 
     public static TaupeGunPlugin getInstance() {
@@ -48,5 +53,9 @@ public class TaupeGunPlugin extends JavaPlugin {
 
     public FileManager getFileManager(){
         return this.fileManager;
+    }
+
+    public TaupeGunManager getTaupeGunManager() {
+        return this.taupeGunManager;
     }
 }

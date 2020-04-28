@@ -11,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.io.IOException;
 import java.util.logging.Level;
@@ -24,6 +25,8 @@ public class TaupeGunPlugin extends JavaPlugin {
     private FileManager fileManager;
 
     private World world;
+
+    private Scoreboard scoreboard;
 
     @Override
     public void onEnable() {
@@ -53,7 +56,7 @@ public class TaupeGunPlugin extends JavaPlugin {
         new ClaimExecutor();
         new RevealExecutor();
         new Listening();
-
+        this.scoreboard = this.getServer().getScoreboardManager().getNewScoreboard();
         this.taupeGunManager = new TaupeGunManager();
     }
 
@@ -71,5 +74,9 @@ public class TaupeGunPlugin extends JavaPlugin {
 
     public World getWorld(){
         return this.world;
+    }
+
+    public Scoreboard getScoreboard(){
+        return this.scoreboard;
     }
 }

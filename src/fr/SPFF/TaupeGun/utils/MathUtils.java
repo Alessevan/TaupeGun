@@ -9,6 +9,16 @@ public class MathUtils {
         return (Math.random() < 0.5) ? ((1.0 - Math.random()) * (n2 - n) + n) : (Math.random() * (n2 - n) + n);
     }
 
+    public static Integer getDistance(final Location start, final Location stop){
+        return (int) Math.ceil(Math.sqrt(Math.pow(start.getX() - stop.getX(), 2) + Math.pow(start.getZ() - stop.getZ(), 2)));
+    }
+
+    public static Integer getFlatDistance(final Location start, final Location stop){
+        start.setY(0);
+        stop.setY(0);
+        return MathUtils.getDistance(start, stop);
+    }
+
     /**
      * Code par SamaGames
      * <p>

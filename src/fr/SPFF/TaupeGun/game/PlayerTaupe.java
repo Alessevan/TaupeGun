@@ -18,10 +18,14 @@ public class PlayerTaupe {
     private Teams teams;
     private Teams taupe;
 
+    private boolean reveal;
+    private boolean claim;
+
     public PlayerTaupe(Player player) {
         this.player = player;
         PlayerTaupe.playerTaupeList.add(this);
         this.taupe = null;
+        this.reveal = false;
     }
 
     public Player getPlayer(){
@@ -36,12 +40,32 @@ public class PlayerTaupe {
         this.taupe = teams;
     }
 
+    public Teams getTaupe(){
+        return this.taupe;
+    }
+
     public Teams getTeam(){
         return this.teams;
     }
 
     public void setTeam(final Teams teams){
         this.teams = teams;
+    }
+
+    public boolean isReveal() {
+        return this.reveal;
+    }
+
+    public void setReveal(final boolean reveal) {
+        this.reveal = reveal;
+    }
+
+    public boolean hasClaim() {
+        return this.claim;
+    }
+
+    public void setClaim(final boolean claim) {
+        this.claim = claim;
     }
 
     public static PlayerTaupe getPlayerTaupe(final Player player){
@@ -52,4 +76,5 @@ public class PlayerTaupe {
     public static List<PlayerTaupe> getPlayerTaupeList(){
         return PlayerTaupe.playerTaupeList;
     }
+
 }

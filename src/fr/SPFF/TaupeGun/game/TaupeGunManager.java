@@ -14,10 +14,11 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class TaupeGunManager {
 
@@ -25,8 +26,12 @@ public class TaupeGunManager {
 
     private State state;
     private List<TeamsColor> teamsColorList;
+    private Map<Player, Scoreboard> playerScoreboardMap;
     private int timer;
     private int task;
+
+    private int minutes;
+    private int seconds;
 
     public TaupeGunManager() {
         this.main = TaupeGunPlugin.getInstance();
@@ -43,6 +48,7 @@ public class TaupeGunManager {
         for(int i = 0; i < size; i++){
             new Teams(false);
         }
+        this.playerScoreboardMap = new HashMap<>();
     }
 
     public enum State {
@@ -70,7 +76,7 @@ public class TaupeGunManager {
         final List<Teams> teamsList = MiscUtils.shuffleTeams(Teams.getTeams());
         if(random) {
             players = MiscUtils.shufflePlayers(players);
-            teamsList.forEach(teams -> teams.getPlayers().clear());
+            teamsList.forEach(Teams::removeAllPlayers);
         }
         for(final Player player : players){
             player.getInventory().clear();
@@ -82,7 +88,7 @@ public class TaupeGunManager {
             Teams teams = Teams.getPlayerTeam(player);
             if(random){
                 teams = (Teams) teamsList.parallelStream().filter(team -> !team.isFull()).toArray()[new Random().nextInt(teamsList.size())];
-                teams.getPlayers().add(player);
+                teams.addPlayer(player);
             }
             playerTaupe.setTeam(teams);
         }
@@ -93,8 +99,13 @@ public class TaupeGunManager {
         this.main.getWorld().getWorldBorder().setSize(1000);
         this.main.getWorld().getWorldBorder().setCenter(new Location(this.main.getWorld(), 0, 0, 0));
         this.main.getWorld().setFullTime(0);
+        this.minutes = 30;
+        this.seconds = 0;
         // Tâche qui s'exécute tous les 10emes de secondes.
         this.task = this.main.getServer().getScheduler().scheduleSyncRepeatingTask(this.main, () -> {
+            for(final Player player : this.main.getServer().getOnlinePlayers()){
+                generateScoreBoard(player);
+            }
             if(this.timer < 10 * 60 * 30){
                 for(final Teams teams : Teams.getTeams()){
                     for(final Player player : teams.getPlayers()) {
@@ -106,10 +117,8 @@ public class TaupeGunManager {
                         StringBuilder stringBuilder = new StringBuilder();
                         for (final Player mate : playerList) {
                             final Location start = player.getLocation().clone();
-                            start.setY(0);
                             final Location stop = mate.getLocation().getBlock().getLocation().clone();
-                            stop.setY(0);
-                            final int distance = (int) Math.ceil(Math.sqrt(Math.pow(start.getX() - stop.getX(), 2) + Math.pow(start.getZ() - stop.getZ(), 2)));
+                            final int distance = MathUtils.getFlatDistance(start, stop);
                             stringBuilder.append("§b§l").append(mate.getDisplayName()).append(" ").append(distance).append(" ").append(MathUtils.getDirection(start, stop)).append("              ");
                         }
                         ActionbarUtils.sendActionBar(player, stringBuilder.toString());
@@ -155,13 +164,76 @@ public class TaupeGunManager {
                     taupes.getPlayers().add(playerTaupe.getPlayer());
                     playerTaupe.setTaupe(taupes);
                 }
+                this.seconds = 0;
+                this.minutes = 50;
             }
             else if(this.timer == 10 * 60 * 80){
                 if(this.main.getWorld().getWorldBorder().getSize() > 100 && this.timer % 10 == 0){
                     this.main.getWorld().getWorldBorder().setSize(this.main.getWorld().getWorldBorder().getSize() - 0.5, 1);
                 }
             }
+            if(this.timer % 10 == 0){
+                this.seconds--;
+                if(this.seconds < 0){
+                    this.minutes--;
+                    this.seconds = 59;
+                }
+            }
+            if(Teams.getTeams().size() == 0){
+                this.stop();
+                return;
+            }
             this.timer++;
         }, 0L, 2L);
     }
+
+    public void stop(){
+        if(this.task != -1){
+            this.main.getServer().getScheduler().cancelTask(this.task);
+            this.task = -1;
+        }
+        this.playerScoreboardMap.forEach((player, scoreboard) -> {
+            scoreboard.getObjectives().forEach(Objective::unregister);
+            scoreboard.clearSlot(DisplaySlot.SIDEBAR);
+            PlayerTaupe.getPlayerTaupeList().remove(PlayerTaupe.getPlayerTaupe(player));
+            Teams.getTeams().remove(Teams.getPlayerTeam(player));
+        });
+        this.playerScoreboardMap.clear();
+        this.state = State.WAITING;
+    }
+
+    private void generateScoreBoard(final Player player){
+        final Location start = player.getLocation();
+        final Location stop = new Location(this.main.getWorld(), 0, 0, 0);
+        if(this.playerScoreboardMap.containsKey(player)) {
+            this.playerScoreboardMap.get(player).getObjective("taupeGun").unregister();
+        }
+        else {
+            this.playerScoreboardMap.put(player, this.main.getServer().getScoreboardManager().getNewScoreboard());
+        }
+        final Scoreboard scoreboard = this.playerScoreboardMap.get(player);
+        final Objective objective = scoreboard.registerNewObjective("taupeGun", "dummy", "§c§lTaupe Gun");
+        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+        objective.getScore("§0").setScore(100);
+        objective.getScore("§8§m-----------------").setScore(99);
+        objective.getScore("§1").setScore(98);
+        objective.getScore("§cCentre : §7" + MathUtils.getFlatDistance(start, stop) + " " + MathUtils.getDirection(start, stop)).setScore(96);
+        objective.getScore("§2").setScore(95);
+        objective.getScore("§0§8§m-----------------").setScore(94);
+        objective.getScore("§3").setScore(93);
+        objective.getScore("§cBordure : §7" + (int) Math.ceil(this.main.getWorld().getWorldBorder().getSize())).setScore(92);
+        objective.getScore("§4").setScore(91);
+        objective.getScore("§1§8§m-----------------").setScore(90);
+        objective.getScore("§5").setScore(89);
+        if(this.timer < 30 * 60 * 10){
+            objective.getScore("§cTaupes dans : §7" + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds)).setScore(88);
+        }
+        else if(this.timer < 80 * 60 * 10) {
+            objective.getScore("§cReduction de la bordure :").setScore(88);
+            objective.getScore("       §7" + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds)).setScore(87);
+        }
+        player.setScoreboard(scoreboard);
+
+    }
+
 }

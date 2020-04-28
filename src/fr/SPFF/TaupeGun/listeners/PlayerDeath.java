@@ -1,6 +1,7 @@
 package fr.SPFF.TaupeGun.listeners;
 
 import fr.SPFF.TaupeGun.game.PlayerTaupe;
+import fr.SPFF.TaupeGun.game.Teams;
 import fr.SPFF.TaupeGun.utils.Message;
 import net.minecraft.server.v1_15_R1.PacketPlayOutNamedSoundEffect;
 import net.minecraft.server.v1_15_R1.SoundCategory;
@@ -27,9 +28,17 @@ class PlayerDeath {
             ((CraftPlayer) pls).getHandle().playerConnection.sendPacket(sound);
         }
         if(this.listening.getMain().getTaupeGunManager().getTimer() > 10 * 60 * 30) {
+            playerTaupe.getTeam().removePlayer(playerTaupe.getPlayer());
+            if(playerTaupe.getTeam().getPlayers().size() == 0){
+                Teams.getTeams().remove(playerTaupe.getTeam());
+            }
             PlayerTaupe.getPlayerTaupeList().remove(playerTaupe);
             playerTaupe.setTaupe(null);
             playerTaupe.setTeam(null);
+            for(final Player player : this.listening.getMain().getServer().getOnlinePlayers()){
+                if(player.equals(playerTaupe.getPlayer()))
+                    player.hidePlayer(this.listening.getMain(), playerTaupe.getPlayer());
+            }
         }
     }
 }

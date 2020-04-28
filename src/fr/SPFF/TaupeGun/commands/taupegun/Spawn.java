@@ -14,7 +14,7 @@ class Spawn {
     boolean handle(final Player player){
         if(!player.hasPermission("taupegun.spawn")){
             Message.create("&c&lTaupe Gun &4&l» &cVous n'avez pas la permission de faire cela.").sendMessage(player);
-            return true;
+            return false;
         }
         Message.create("&3&lTaupe Gun &8&l» &7Sauvegarde du spawn.").sendMessage(player);
         this.executor.getMain().getFileManager().setLine("data", "spawn", player.getLocation());

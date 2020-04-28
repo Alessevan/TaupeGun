@@ -1,7 +1,9 @@
 package fr.SPFF.TaupeGun.game;
 
 import fr.SPFF.TaupeGun.plugin.TaupeGunPlugin;
+import fr.SPFF.TaupeGun.utils.MiscUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +21,25 @@ public class Teams {
     private final TeamsColor color;
     final List<Player> players;
 
+    private final Team team;
+
     public Teams(boolean isTaupe){
         this.main = TaupeGunPlugin.getInstance();
         if(isTaupe) color = TeamsColor.TAUPE;
         else color = this.main.getTaupeGunManager().getAvailableColors().remove(new Random().nextInt(this.main.getTaupeGunManager().getAvailableColors().size()));
         this.players = new ArrayList<>();
         Teams.teamsList.add(this);
+        this.team = this.main.getServer().getScoreboardManager().getMainScoreboard().registerNewTeam(MiscUtils.randomize(10));
+        this.team.setColor(TeamsColor.getColor(this.getColor().getValue()));
+        if(isTaupe) this.team.setPrefix("[Taupe] ");
+        this.team.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
     }
 
     public void destroy(){
+        for(final Player player : this.getPlayers()){
+            if(this.team.getEntries().contains(player.getName()))
+                this.team.removeEntry(player.getName());
+        }
         this.players.clear();
         Teams.teamsList.remove(this);
     }
@@ -38,6 +50,34 @@ public class Teams {
 
     public List<Player> getPlayers() {
         return players;
+    }
+
+    public void addPlayer(final Player player){
+        this.team.addEntry(player.getName());
+    }
+
+    public void removePlayer(final Player player){
+        this.team.removeEntry(player.getName());
+    }
+
+    public void removeAllPlayers(){
+        this.getPlayers().clear();
+    }
+
+    public void show(final Player player){
+        for(final Player players : this.getPlayers()) {
+            if(players.equals(player))
+                if(!this.team.getEntries().contains(player.getName()))
+                    this.team.addEntry(player.getName());
+        }
+    }
+
+    public void hide(final Player player){
+        for(final Player players : this.getPlayers()) {
+            if(players.equals(player))
+                if(this.team.getEntries().contains(player.getName()))
+                    this.team.removeEntry(player.getName());
+        }
     }
 
     public boolean isFull(){

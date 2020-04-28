@@ -9,7 +9,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class AsyncPlayerChat {
+class AsyncPlayerChat {
 
     private final Listening listening;
 

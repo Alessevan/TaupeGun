@@ -128,6 +128,7 @@ public class TaupeGunManager {
                     teams = (Teams) teamsList.parallelStream().filter(team -> !team.isFull()).toArray()[new Random().nextInt(Math.abs(teamsList.parallelStream().filter(team -> !team.isFull()).toArray().length))];
                     teams.addPlayer(player);
                 } else {
+                    if (!Teams.getPlayerTeam(player).isPresent()) continue;
                     teams = Teams.getPlayerTeam(player).get();
                 }
                 final Teams team = teams;

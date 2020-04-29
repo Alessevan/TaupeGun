@@ -84,6 +84,7 @@ public class TaupeGunManager {
                 }
             } else if (timer.get() == 0) {
                 Message.create("&3&lTaupe Gun &8&l» &7Que la partie commence !").broadcast();
+                this.start();
                 this.main.getServer().getScheduler().cancelTask(this.chronoTask);
                 return;
             }
@@ -127,7 +128,7 @@ public class TaupeGunManager {
                     teams = (Teams) teamsList.parallelStream().filter(team -> !team.isFull()).toArray()[new Random().nextInt(Math.abs(teamsList.parallelStream().filter(team -> !team.isFull()).toArray().length))];
                     teams.addPlayer(player);
                 } else {
-                    Teams.getPlayerTeam(player).get();
+                    teams = Teams.getPlayerTeam(player).get();
                 }
                 final Teams team = teams;
                 this.main.getServer().getScheduler().runTask(this.main, () ->

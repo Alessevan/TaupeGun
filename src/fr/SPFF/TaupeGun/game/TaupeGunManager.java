@@ -84,7 +84,7 @@ public class TaupeGunManager {
                 }
             } else if (timer.get() == 0) {
                 Message.create("&3&lTaupe Gun &8&l» &7Que la partie commence !").broadcast();
-                this.start();
+                this.main.getServer().getScheduler().runTask(this.main, this::start);
                 this.main.getServer().getScheduler().cancelTask(this.chronoTask);
                 return;
             }

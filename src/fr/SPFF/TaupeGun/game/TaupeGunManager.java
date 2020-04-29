@@ -35,7 +35,6 @@ public class TaupeGunManager {
 
     private int minutes;
     private int seconds;
-    private Objective objective;
 
     public TaupeGunManager() {
         this.main = TaupeGunPlugin.getInstance();

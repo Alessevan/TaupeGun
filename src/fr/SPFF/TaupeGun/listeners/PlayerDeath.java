@@ -1,7 +1,6 @@
 package fr.SPFF.TaupeGun.listeners;
 
 import fr.SPFF.TaupeGun.game.PlayerTaupe;
-import fr.SPFF.TaupeGun.game.Teams;
 import fr.SPFF.TaupeGun.utils.Message;
 import net.minecraft.server.v1_15_R1.PacketPlayOutNamedSoundEffect;
 import net.minecraft.server.v1_15_R1.SoundCategory;
@@ -22,23 +21,27 @@ class PlayerDeath {
 
         final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(e.getEntity());
         e.setDeathMessage("");
-        Message.create("&c&lTaupe Gun &4&l» &7" + playerTaupe.getPlayer().getDisplayName() + " est mort.").broadcast();
-        for(final Player pls : this.listening.getMain().getServer().getOnlinePlayers()){
+        if (playerTaupe == null) return;
+        Message.create("&c&lTaupe Gun &4&l» &7" + e.getEntity().getDisplayName() + " est mort.").broadcast();
+        for (final Player pls : this.listening.getMain().getServer().getOnlinePlayers()) {
             final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.ENTITY_WITHER_SPAWN, SoundCategory.BLOCKS, pls.getLocation().getX(), pls.getLocation().getY(), pls.getLocation().getZ(), 1, 1);
             ((CraftPlayer) pls).getHandle().playerConnection.sendPacket(sound);
         }
-        if(this.listening.getMain().getTaupeGunManager().getTimer() > 10 * 60 * 30) {
-            playerTaupe.getTeam().removePlayer(playerTaupe.getPlayer());
-            if(playerTaupe.getTeam().getPlayers().size() == 0){
-                Teams.getTeams().remove(playerTaupe.getTeam());
-            }
+        playerTaupe.getTeam().removePlayer(playerTaupe.getPlayer());
+        if (playerTaupe.getTeam().getPlayers().size() == 0) {
+            Message.create("&c&lTaupe Gun &4&l» &cUne équipe est morte !").broadcast();
+            playerTaupe.getTeam().destroy();
             PlayerTaupe.getPlayerTaupeList().remove(playerTaupe);
             playerTaupe.setTaupe(null);
             playerTaupe.setTeam(null);
-            for(final Player player : this.listening.getMain().getServer().getOnlinePlayers()){
-                if(player.equals(playerTaupe.getPlayer()))
-                    player.hidePlayer(this.listening.getMain(), playerTaupe.getPlayer());
-            }
+            return;
         }
+        if (this.listening.getMain().getTaupeGunManager().getTimer() > this.listening.getMain().getTaupeGunManager().taupeTime) {
+            PlayerTaupe.getPlayerTaupeList().remove(playerTaupe);
+            playerTaupe.setTaupe(null);
+            playerTaupe.setTeam(null);
+            return;
+        }
+        playerTaupe.getTeam().addPlayer(playerTaupe.getPlayer());
     }
 }

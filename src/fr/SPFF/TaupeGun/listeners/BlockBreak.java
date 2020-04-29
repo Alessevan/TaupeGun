@@ -15,7 +15,6 @@ class BlockBreak {
 
     void handle(final BlockBreakEvent e){
         if(PlayerTaupe.getPlayerTaupe(e.getPlayer()) == null) {
-            e.setCancelled(true);
             return;
         }
         switch (e.getBlock().getType()){
@@ -23,11 +22,13 @@ class BlockBreak {
                 e.setDropItems(false);
                 e.getBlock().getLocation().getWorld().dropItemNaturally(e.getBlock().getLocation().add(0.5, 0D, 0.5), new ItemStack(Material.IRON_INGOT));
                 e.setExpToDrop(7);
+                return;
             }
             case GOLD_ORE: {
                 e.setDropItems(false);
                 e.getBlock().getLocation().getWorld().dropItemNaturally(e.getBlock().getLocation().add(0.5, 0D, 0.5), new ItemStack(Material.GOLD_INGOT));
                 e.setExpToDrop(10);
+                return;
             }
         }
     }

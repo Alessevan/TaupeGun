@@ -28,21 +28,25 @@ public class ClaimExecutor implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if(!(sender instanceof Player)){
+        if (!(sender instanceof Player)) {
             return false;
         }
         final Player player = (Player) sender;
         final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(player);
 
-        if(!this.main.getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING)){
+        if (this.main.getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING)) {
             Message.create("&c&lTaupe Gun &4&l» &cLa partie n'a pas commencé.").sendMessage(player);
             return false;
         }
-        if(!playerTaupe.isTaupe()){
+        if (playerTaupe == null) {
+            Message.create("&c&lTaupe Gun &4&l» &cVous n'êtes pas dans la partie.").sendMessage(player);
+            return false;
+        }
+        if (!playerTaupe.isTaupe()) {
             Message.create("&c&lTaupe Gun &4&l» &cVous n'êtes pas une taupe.").sendMessage(player);
             return false;
         }
-        if(playerTaupe.hasClaim()){
+        if (playerTaupe.hasClaim()) {
             Message.create("&c&lTaupe Gun &4&l» &cVous avez déjà pris un kit.").sendMessage(player);
             return false;
         }

@@ -1,22 +1,23 @@
 package fr.SPFF.TaupeGun.listeners;
 
 import fr.SPFF.TaupeGun.game.TaupeGunManager;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-class EntityDamage {
+class EntityDamageByEntity {
 
     private final Listening listening;
 
-    EntityDamage(final Listening listening) {
+    EntityDamageByEntity(final Listening listening) {
         this.listening = listening;
     }
 
-    void handle(final EntityDamageEvent e){
+    void handle(final EntityDamageByEntityEvent e) {
         if (this.listening.getMain().getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING)) {
             e.setCancelled(true);
         }
-        if (e.getCause().equals(EntityDamageEvent.DamageCause.FALL) && this.listening.getMain().getTaupeGunManager().getTimer() <= 10 * 15) {
+        if (this.listening.getMain().getTaupeGunManager().getTimer() <= this.listening.getMain().getTaupeGunManager().taupeTime) {
             e.setCancelled(true);
         }
     }
+
 }

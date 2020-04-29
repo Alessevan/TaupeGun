@@ -8,11 +8,7 @@ import java.util.Optional;
 
 public class PlayerTaupe {
 
-    private static final List<PlayerTaupe> playerTaupeList;
-
-    static {
-        playerTaupeList = new ArrayList<>();
-    }
+    private static final List<PlayerTaupe> playerTaupeList = new ArrayList<>();
 
     private final Player player;
     private Teams teams;

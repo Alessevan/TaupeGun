@@ -3,6 +3,7 @@ package fr.SPFF.TaupeGun.listeners;
 import fr.SPFF.TaupeGun.game.PlayerTaupe;
 import fr.SPFF.TaupeGun.game.TaupeGunManager;
 import fr.SPFF.TaupeGun.game.Teams;
+import fr.SPFF.TaupeGun.game.TeamsColor;
 import fr.SPFF.TaupeGun.utils.Message;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -36,11 +37,11 @@ class AsyncPlayerChat {
                 if(e.getMessage().startsWith("!")){
                     e.setCancelled(false);
                     final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(e.getPlayer());
-                    e.setFormat(ChatColor.translateAlternateColorCodes('&', Teams.getPlayerTeam(playerTaupe).getColor().getValue() + "[Équipe] " + e.getPlayer().getDisplayName() + " : &f") + e.getMessage().replace("&", ""));
+                    e.setFormat(ChatColor.translateAlternateColorCodes('&', (playerTaupe.isTaupe() && playerTaupe.isReveal() ? TeamsColor.getColor(playerTaupe.getTaupe().getColor().getValue()) : TeamsColor.getColor(Teams.getPlayerTeam(playerTaupe).get().getColor().getValue())) + "[Global]" + (playerTaupe.isTaupe() && playerTaupe.isReveal() ? " [" + playerTaupe.getTaupe().getName() + "] " : "") + " " + e.getPlayer().getDisplayName() + " : &f") + e.getMessage().substring(1).replace("&", ""));
                     return;
                 }
                 final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(e.getPlayer());
-                final Message message = Message.create(Teams.getPlayerTeam(playerTaupe).getColor().getValue() + "[Équipe] " + e.getPlayer().getDisplayName() + " : &f" + e.getMessage().replace("&", ""));
+                final Message message = Message.create(TeamsColor.getColor(playerTaupe.getTeam().getColor().getValue()) + "[Équipe] " + e.getPlayer().getDisplayName() + " : &f" + e.getMessage().replace("&", ""));
                 for(final PlayerTaupe playerTaupes : PlayerTaupe.getPlayerTaupeList()){
                     if(playerTaupe.getTeam().equals(playerTaupes.getTeam())){
                         message.sendMessage(playerTaupes.getPlayer());

@@ -262,16 +262,20 @@ public class TaupeGunManager {
     private boolean ifVictory() {
         if (Teams.getTeams().size() > 2)
             return false;
+        boolean b = false;
         for (final Teams teams : Teams.getTeams()) {
-            if (teams.isTaupe() && Teams.getTeams().size() == 2) {
-                for (final Player player : teams.getPlayers()) {
-                    if (PlayerTaupe.getPlayerTaupe(player).isReveal())
-                        return false;
+            if (this.timer > this.taupeTime) {
+                if (teams.isTaupe() && Teams.getTeams().size() == 2) {
+                    for (final Player player : teams.getPlayers()) {
+                        if (PlayerTaupe.getPlayerTaupe(player).isReveal())
+                            return false;
+                    }
+                    b = true;
                 }
-                return true;
-            }
+            } else if (Teams.getTeams().size() == 2)
+                return false;
         }
-        return true;
+        return b;
     }
 
     private void generateScoreBoard(final Player player) {

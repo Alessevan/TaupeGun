@@ -16,7 +16,7 @@ class Stop {
             Message.create("&c&lTaupe Gun &4&l» &cVous n'avez pas la permission de faire cela.").sendMessage(commandSender);
             return false;
         }
-        this.executor.getMain().getTaupeGunManager().start();
+        this.executor.getMain().getTaupeGunManager().stop();
         Message.create("&3&lTaupe Gun &8&l» &7Arrêt de la partie à cause de " + commandSender.getName() + ".").broadcast();
         return true;
     }

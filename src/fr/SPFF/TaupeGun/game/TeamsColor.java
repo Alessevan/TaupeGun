@@ -78,4 +78,12 @@ public enum TeamsColor {
                 return null;
         }
     }
+
+    public static TeamsColor[] getColors() {
+        TeamsColor[] teamsColors = new TeamsColor[TeamsColor.values().length - 1];
+        for (int i = 0; i < TeamsColor.values().length - 1; i++) {
+            teamsColors[i] = TeamsColor.fromValue(i);
+        }
+        return teamsColors;
+    }
 }

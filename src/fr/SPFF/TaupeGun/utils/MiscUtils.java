@@ -1,6 +1,7 @@
 package fr.SPFF.TaupeGun.utils;
 
 import fr.SPFF.TaupeGun.game.Teams;
+import fr.SPFF.TaupeGun.game.TeamsColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -17,19 +18,31 @@ public class MiscUtils {
         return shuffled;
     }
 
-    public static List<Teams> shuffleTeams(final List<Teams> list){
+    public static List<Teams> shuffleTeams(final List<Teams> list) {
         final List<Teams> shuffled = new ArrayList<>();
         final List<Teams> clone = new ArrayList<>();
-        for(final Teams team : list){
+        for (final Teams team : list) {
             clone.add(team);
         }
-        while(clone.size() > 0){
+        while (clone.size() > 0) {
             shuffled.add(clone.remove(new Random().nextInt(clone.size())));
         }
         return shuffled;
     }
 
-    public static String randomize(final int length){
+    public static List<TeamsColor> shuffleColor(final List<TeamsColor> list) {
+        final List<TeamsColor> shuffled = new ArrayList<>();
+        final List<TeamsColor> clone = new ArrayList<>();
+        for (final TeamsColor team : list) {
+            clone.add(team);
+        }
+        while (clone.size() > 0) {
+            shuffled.add(clone.remove(new Random().nextInt(clone.size())));
+        }
+        return shuffled;
+    }
+
+    public static String randomize(final int length) {
         String[] dataSet = {
                 "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
                 "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",

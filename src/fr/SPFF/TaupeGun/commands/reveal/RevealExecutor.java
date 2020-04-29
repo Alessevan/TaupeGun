@@ -26,30 +26,40 @@ public class RevealExecutor implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if(!(sender instanceof Player)){
+        if (!(sender instanceof Player)) {
             return false;
         }
         final Player player = (Player) sender;
         final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(player);
 
-        if(!this.main.getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING)){
+        if (this.main.getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING)) {
             Message.create("&c&lTaupe Gun &4&l» &cLa partie n'a pas commencé.").sendMessage(player);
             return false;
         }
-        if(!playerTaupe.isTaupe()){
+        if (playerTaupe == null) {
+            Message.create("&c&lTaupe Gun &4&l» &cVous n'êtes pas dans la partie.").sendMessage(player);
+            return false;
+        }
+        if (!playerTaupe.isTaupe()) {
             Message.create("&c&lTaupe Gun &4&l» &cVous n'êtes pas une taupe.").sendMessage(player);
             return false;
         }
-        if(playerTaupe.isReveal()){
+        if (playerTaupe.isReveal()) {
             Message.create("&c&lTaupe Gun &4&l» &cVous vous êtes déjà révélé.").sendMessage(player);
             return false;
         }
         player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLDEN_APPLE)).setPickupDelay(0);
         playerTaupe.setReveal(true);
+        playerTaupe.getTeam().removePlayer(playerTaupe.getPlayer());
+        if (playerTaupe.getTeam().getPlayers().size() == 0) {
+            playerTaupe.getTeam().destroy();
+            Message.create("&c&lTaupe Gun &4&l» &cUne équipe est morte !").broadcast();
+        }
+        playerTaupe.setTeam(playerTaupe.getTaupe());
         playerTaupe.getTeam().hide(playerTaupe.getPlayer());
         playerTaupe.getTaupe().show(playerTaupe.getPlayer());
-        for(final Player pls : this.main.getServer().getOnlinePlayers()){
-            final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.ENTITY_GHAST_SCREAM, SoundCategory.BLOCKS, pls.getLocation().getX(), pls.getLocation().getY(), pls.getLocation().getZ(), 1, 1);
+        for (final Player pls : this.main.getServer().getOnlinePlayers()) {
+            final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.ENTITY_GHAST_HURT, SoundCategory.BLOCKS, pls.getLocation().getX(), pls.getLocation().getY(), pls.getLocation().getZ(), 1, 1);
             ((CraftPlayer) pls).getHandle().playerConnection.sendPacket(sound);
         }
         Message.create("&3&lTaupe Gun &8&l» &c")

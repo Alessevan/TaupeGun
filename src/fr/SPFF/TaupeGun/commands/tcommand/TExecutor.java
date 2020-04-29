@@ -20,30 +20,33 @@ public class TExecutor implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if(!(sender instanceof Player)){
+        if (!(sender instanceof Player)) {
             return false;
         }
         final Player player = (Player) sender;
         final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(player);
-
-        if(!this.main.getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING)){
+        if (this.main.getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING)) {
             Message.create("&c&lTaupe Gun &4&l» &cLa partie n'a pas commencé.").sendMessage(player);
             return false;
         }
-        if(!playerTaupe.isTaupe()){
+        if (playerTaupe == null) {
+            Message.create("&c&lTaupe Gun &4&l» &cVous n'êtes pas dans la partie.").sendMessage(player);
+            return false;
+        }
+        if (!playerTaupe.isTaupe()) {
             Message.create("&c&lTaupe Gun &4&l» &cVous n'êtes pas une taupe.").sendMessage(player);
             return false;
         }
         final StringBuilder stringBuilder = new StringBuilder();
-        for(final String part : args){
+        for (final String part : args) {
             stringBuilder.append(part).append((part.equals(args[args.length - 1]) ? "" : " "));
         }
-        if(stringBuilder.length() == 0){
+        if (stringBuilder.length() == 0) {
             Message.create("&c&lTaupe Gun &4&l» &cVous devez écrire un message.").sendMessage(player);
             return false;
         }
-        final Message message = Message.create("&c&l[Taupe] &c" + player.getDisplayName() + " : &f" + stringBuilder.toString());
-        for(final Player players : playerTaupe.getTeam().getPlayers()){
+        final Message message = Message.create("&c&l" + playerTaupe.getTaupe().getName() + " [Taupe] &c" + player.getDisplayName() + " : &f" + stringBuilder.toString());
+        for (final Player players : playerTaupe.getTaupe().getPlayers()) {
             message.sendMessage(players);
         }
         this.main.getLogger().info("[Taupe] " + player.getDisplayName() + " : " + stringBuilder.toString());

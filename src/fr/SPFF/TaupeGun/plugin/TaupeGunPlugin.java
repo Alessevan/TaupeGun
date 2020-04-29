@@ -56,8 +56,9 @@ public class TaupeGunPlugin extends JavaPlugin {
         new ClaimExecutor();
         new RevealExecutor();
         new Listening();
-        this.scoreboard = this.getServer().getScoreboardManager().getNewScoreboard();
+        this.scoreboard = this.getServer().getScoreboardManager().getMainScoreboard();
         this.taupeGunManager = new TaupeGunManager();
+        this.taupeGunManager.init();
     }
 
     public static TaupeGunPlugin getInstance() {

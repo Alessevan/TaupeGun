@@ -2,7 +2,8 @@ package fr.SPFF.TaupeGun.listeners;
 
 import fr.SPFF.TaupeGun.game.PlayerTaupe;
 import fr.SPFF.TaupeGun.game.TaupeGunManager;
-import fr.SPFF.TaupeGun.game.Teams;
+import fr.SPFF.TaupeGun.utils.Message;
+import org.bukkit.ChatColor;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 class PlayerQuit {
@@ -15,7 +16,7 @@ class PlayerQuit {
 
     void handle(final PlayerQuitEvent e){
         if(this.listening.getMain().getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING)){
-            e.setQuitMessage("&3&lTaupe Gun &8&l» &7" + e.getQuitMessage() + " a quitté la partie");
+            e.setQuitMessage(ChatColor.translateAlternateColorCodes('&', "&3&lTaupe Gun &8&l» &7" + e.getPlayer().getDisplayName() + " a quitté la partie"));
         }
         else {
             final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(e.getPlayer());
@@ -24,17 +25,17 @@ class PlayerQuit {
                 return;
             } else {
                 playerTaupe.getTeam().removePlayer(playerTaupe.getPlayer());
-                if (this.listening.getMain().getTaupeGunManager().getTimer() < 10 * 60 * 30) {
-                    e.setQuitMessage("&3&lTaupe Gun &8&l» &7" + e.getPlayer().getDisplayName() + " s'est déconnecté mais il peut revenir avant la diffusion de l'ordre de mission des taupes.");
-                    return;
+                if (playerTaupe.isTaupe()) {
+                    playerTaupe.getTaupe().removePlayer(playerTaupe.getPlayer());
                 }
-                e.setQuitMessage("&3&lTaupe Gun &8&l» &7" + e.getPlayer().getDisplayName() + " s'est déconnecté et ne peut plus se reconnecter");
-                if(playerTaupe.getTeam().getPlayers().size() == 0){
-                    Teams.getTeams().remove(playerTaupe.getTeam());
+                e.setQuitMessage(ChatColor.translateAlternateColorCodes('&', "&3&lTaupe Gun &8&l» &7" + e.getPlayer().getDisplayName() + " s'est déconnecté."));
+                if (playerTaupe.getTeam().getPlayers().size() == 0) {
+                    Message.create("&c&lTaupe Gun &4&l» &cUne équipe est morte !").broadcast();
+                    playerTaupe.getTeam().destroy();
+                    PlayerTaupe.getPlayerTaupeList().remove(playerTaupe);
+                    playerTaupe.setTeam(null);
+                    playerTaupe.setTaupe(null);
                 }
-                PlayerTaupe.getPlayerTaupeList().remove(playerTaupe);
-                playerTaupe.setTeam(null);
-                playerTaupe.setTaupe(null);
             }
         }
     }

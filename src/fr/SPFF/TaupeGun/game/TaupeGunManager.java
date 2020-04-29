@@ -302,7 +302,7 @@ public class TaupeGunManager {
             objective.getScore("§cReduction de la bordure :").setScore(88);
             objective.getScore("       §7" + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds)).setScore(87);
         }
-        final Objective life = scoreboard.registerNewObjective("taupeLige", "health", "taupeLife");
+        final Objective life = scoreboard.registerNewObjective("taupeLife", "health", "taupeLife");
         life.setRenderType(RenderType.HEARTS);
         life.setDisplaySlot(DisplaySlot.PLAYER_LIST);
         player.setScoreboard(scoreboard);

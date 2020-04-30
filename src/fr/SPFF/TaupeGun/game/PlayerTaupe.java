@@ -24,10 +24,6 @@ public class PlayerTaupe {
         this.claim = false;
     }
 
-    public Player getPlayer() {
-        return this.player;
-    }
-
     public static PlayerTaupe getPlayerTaupe(final Player player) {
         for (final PlayerTaupe playerTaupes : PlayerTaupe.getPlayerTaupeList()) {
             if (playerTaupes.getPlayer().getName().equalsIgnoreCase(player.getName())) {
@@ -37,23 +33,27 @@ public class PlayerTaupe {
         return null;
     }
 
+    public static List<PlayerTaupe> getPlayerTaupeList() {
+        return PlayerTaupe.playerTaupeList;
+    }
+
     public boolean isTaupe() {
         return this.taupe != null;
     }
 
-    public void setTaupe(final Teams teams) {
-        this.taupe = teams;
+    public Player getPlayer() {
+        return this.player;
     }
 
-    public Teams getTaupe() {
-        return this.taupe;
+    public void setPlayer(final Player player) {
+        this.player = player;
     }
 
-    public Teams getTeam(){
+    public Teams getTeam() {
         return this.teams;
     }
 
-    public void setTeam(final Teams teams){
+    public void setTeam(final Teams teams) {
         this.teams = teams;
     }
 
@@ -73,12 +73,12 @@ public class PlayerTaupe {
         this.claim = claim;
     }
 
-    public void setPlayer(final Player player) {
-        this.player = player;
+    public Teams getTaupe() {
+        return this.taupe;
     }
 
-    public static List<PlayerTaupe> getPlayerTaupeList() {
-        return PlayerTaupe.playerTaupeList;
+    public void setTaupe(final Teams teams) {
+        this.taupe = teams;
     }
 
 }

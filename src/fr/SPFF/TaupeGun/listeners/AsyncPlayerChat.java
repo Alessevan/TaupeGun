@@ -38,8 +38,8 @@ class AsyncPlayerChat {
                     return;
                 }
                 final Message message = Message.create(TeamsColor.getColor(playerTaupe.getTeam().getColor().getValue()) + "[Équipe] " + e.getPlayer().getDisplayName() + " : &f" + e.getMessage().replace("&", ""));
-                for(final PlayerTaupe playerTaupes : PlayerTaupe.getPlayerTaupeList()){
-                    if(playerTaupe.getTeam().equals(playerTaupes.getTeam())){
+                for (final PlayerTaupe playerTaupes : PlayerTaupe.getPlayerTaupeList()) {
+                    if (playerTaupe.getTeam().equals(playerTaupes.getTeam())) {
                         message.sendMessage(playerTaupes.getPlayer());
                     }
                 }

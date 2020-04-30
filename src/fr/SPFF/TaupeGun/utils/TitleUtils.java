@@ -33,7 +33,6 @@ public class TitleUtils {
             e.printStackTrace();
         }
     }
-
     public static void sendPacket(Player player, Object packet) {
         try {
             Object handle = player.getClass().getMethod("getHandle").invoke(player);

@@ -4,13 +4,12 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class PlayerTaupe {
 
     private static final List<PlayerTaupe> playerTaupeList = new ArrayList<>();
 
-    private final Player player;
+    private Player player;
     private Teams teams;
     private Teams taupe;
 
@@ -22,21 +21,31 @@ public class PlayerTaupe {
         PlayerTaupe.playerTaupeList.add(this);
         this.taupe = null;
         this.reveal = false;
+        this.claim = false;
     }
 
-    public Player getPlayer(){
+    public Player getPlayer() {
         return this.player;
+    }
+
+    public static PlayerTaupe getPlayerTaupe(final Player player) {
+        for (final PlayerTaupe playerTaupes : PlayerTaupe.getPlayerTaupeList()) {
+            if (playerTaupes.getPlayer().getName().equalsIgnoreCase(player.getName())) {
+                return playerTaupes;
+            }
+        }
+        return null;
     }
 
     public boolean isTaupe() {
         return this.taupe != null;
     }
 
-    public void setTaupe(final Teams teams){
+    public void setTaupe(final Teams teams) {
         this.taupe = teams;
     }
 
-    public Teams getTaupe(){
+    public Teams getTaupe() {
         return this.taupe;
     }
 
@@ -64,12 +73,11 @@ public class PlayerTaupe {
         this.claim = claim;
     }
 
-    public static PlayerTaupe getPlayerTaupe(final Player player){
-        final Optional<PlayerTaupe> playerTaupe = PlayerTaupe.playerTaupeList.parallelStream().filter(playerTaupe1 -> playerTaupe1.player.equals(player)).findFirst();
-        return playerTaupe.orElse(null);
+    public void setPlayer(final Player player) {
+        this.player = player;
     }
 
-    public static List<PlayerTaupe> getPlayerTaupeList(){
+    public static List<PlayerTaupe> getPlayerTaupeList() {
         return PlayerTaupe.playerTaupeList;
     }
 

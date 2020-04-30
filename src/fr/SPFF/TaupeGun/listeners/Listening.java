@@ -5,6 +5,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -46,15 +47,19 @@ public class Listening implements Listener {
     }
 
     @EventHandler
-    public void onAsyncPlayerChat(final AsyncPlayerChatEvent e){
+    public void onAsyncPlayerChat(final AsyncPlayerChatEvent e) {
         new AsyncPlayerChat(this).handle(e);
     }
 
     @EventHandler
-    public void onBlockBreak(final BlockBreakEvent e){
+    public void onBlockBreak(final BlockBreakEvent e) {
         new BlockBreak(this).handle(e);
     }
 
+    @EventHandler
+    public void onFoodLevelChange(final FoodLevelChangeEvent e) {
+        new FoodLevelChange(this).handle(e);
+    }
 
     public TaupeGunPlugin getMain() {
         return this.main;

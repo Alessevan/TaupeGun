@@ -1,6 +1,7 @@
 package fr.SPFF.TaupeGun.listeners;
 
 import fr.SPFF.TaupeGun.game.PlayerTaupe;
+import fr.SPFF.TaupeGun.game.TaupeGunManager;
 import fr.SPFF.TaupeGun.utils.Message;
 import net.minecraft.server.v1_15_R1.PacketPlayOutNamedSoundEffect;
 import net.minecraft.server.v1_15_R1.SoundCategory;
@@ -22,15 +23,16 @@ class PlayerRespawn {
     }
 
     void handle(final PlayerRespawnEvent e) {
-        final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(e.getPlayer());
-        if(PlayerTaupe.getPlayerTaupe(e.getPlayer()) == null) {
-            e.getPlayer().setGameMode(GameMode.SPECTATOR);
-            e.getPlayer().teleport(this.listening.getMain().getFileManager().getFile("data").getLocation("spawn"));
-        }
-        else {
-
-            this.listening.getMain().getServer().getScheduler().runTaskLater(this.listening.getMain(), () -> {
-
+        this.listening.getMain().getServer().getScheduler().runTaskLater(this.listening.getMain(), () -> {
+            final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(e.getPlayer());
+            if (playerTaupe == null || this.listening.getMain().getTaupeGunManager().getTimer() > this.listening.getMain().getTaupeGunManager().taupeTime) {
+                if (playerTaupe != null) {
+                    PlayerTaupe.getPlayerTaupeList().remove(playerTaupe);
+                }
+                if (!this.listening.getMain().getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING))
+                    e.getPlayer().setGameMode(GameMode.SPECTATOR);
+                e.getPlayer().teleport(this.listening.getMain().getFileManager().getFile("data").getLocation("spawn"));
+            } else if (this.listening.getMain().getTaupeGunManager().getTimer() < this.listening.getMain().getTaupeGunManager().taupeTime) {
                 for (final Player pls : this.listening.getMain().getServer().getOnlinePlayers()) {
                     final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.ENTITY_EVOKER_PREPARE_WOLOLO, SoundCategory.BLOCKS, pls.getLocation().getX(), pls.getLocation().getY(), pls.getLocation().getZ(), 5, 1);
                     ((CraftPlayer) pls).getHandle().playerConnection.sendPacket(sound);
@@ -50,9 +52,9 @@ class PlayerRespawn {
                 Message.create("&3&lTaupe Gun &8&l» &7" + e.getPlayer().getDisplayName() + " est revenu d'entre les morts !").broadcast();
                 final Location location = ((Player) playerTaupe.getTeam().getPlayers().parallelStream().filter(mate -> !mate.equals(playerTaupe.getPlayer())).toArray()[new Random().nextInt(playerTaupe.getTeam().getPlayers().parallelStream().filter(mate -> !mate.equals(playerTaupe.getPlayer())).toArray().length)]).getLocation().clone();
                 e.getPlayer().teleport(location);
-
-            }, 2L);
-        }
+                playerTaupe.getTeam().show(playerTaupe.getPlayer());
+            }
+        }, 2L);
     }
 
 }

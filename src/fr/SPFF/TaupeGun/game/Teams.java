@@ -16,7 +16,7 @@ public class Teams {
 
     private final TaupeGunPlugin main;
     private final TeamsColor color;
-    private final String name;
+    private String name;
     final List<Player> players;
 
     //private final Team team;
@@ -50,10 +50,6 @@ public class Teams {
             name1 = "Taupes" + i;
         }
         this.name = name1;
-        //this.team = this.main.getScoreboard().registerNewTeam(MiscUtils.randomize(10));
-        //this.team.setColor(TeamsColor.getColor(this.getColor().getValue()));
-        //if(isTaupe) this.team.setPrefix(TeamsColor.getColor(this.getColor().getValue()) + "[Taupe] ");
-        //else this.team.setPrefix(TeamsColor.getColor(this.getColor().getValue()) + "");
         Teams.teamsList.add(this);
     }
 
@@ -75,17 +71,18 @@ public class Teams {
 
     public void destroy() {
         for (final Player player : this.getPlayers()) {
-            // if(this.team.getEntries().contains(player.getName()))
-            //this.team.removeEntry(player.getName());
             NametagEdit.getApi().setPrefix(player, "");
         }
         this.players.clear();
-        //this.team.unregister();
         Teams.teamsList.remove(this);
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
     }
 
     public void removeAllPlayers() {
@@ -97,27 +94,16 @@ public class Teams {
     }
 
     public void removePlayer(final Player player) {
-        //this.team.removeEntry(player.getName());
         NametagEdit.getApi().setPrefix(player, "");
         this.getPlayers().remove(player);
     }
 
     public void show(final Player player) {
-        for (final Player players : this.getPlayers()) {
-            if (players.equals(player))
-                NametagEdit.getApi().setPrefix(player, TeamsColor.getColor(this.getColor().getValue()) + (this.isTaupe() ? this.getName() + " " : ""));
-            //if(!this.team.getEntries().contains(player.getName()))
-            //this.team.addEntry(player.getName());
-        }
+        NametagEdit.getApi().setPrefix(player, TeamsColor.getColor(this.getColor().getValue()) + (this.isTaupe() ? this.getName() + " " : ""));
     }
 
     public void hide(final Player player) {
-        for (final Player players : this.getPlayers()) {
-            if (players.equals(player))
-                NametagEdit.getApi().setPrefix(player, "");
-            //if(this.team.getEntries().contains(player.getName()))
-            //this.team.removeEntry(player.getName());
-        }
+        NametagEdit.getApi().setPrefix(player, "");
     }
 
     public boolean isTaupe() {

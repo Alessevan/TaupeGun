@@ -50,13 +50,10 @@ public class RevealExecutor implements CommandExecutor {
         }
         player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.GOLDEN_APPLE)).setPickupDelay(0);
         playerTaupe.setReveal(true);
-        playerTaupe.getTeam().removePlayer(playerTaupe.getPlayer());
         if (playerTaupe.getTeam().getPlayers().size() == 0) {
             playerTaupe.getTeam().destroy();
-            Message.create("&c&lTaupe Gun &4&l» &cUne équipe est morte !").broadcast();
         }
         playerTaupe.setTeam(playerTaupe.getTaupe());
-        playerTaupe.getTeam().hide(playerTaupe.getPlayer());
         playerTaupe.getTaupe().show(playerTaupe.getPlayer());
         for (final Player pls : this.main.getServer().getOnlinePlayers()) {
             final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.ENTITY_GHAST_HURT, SoundCategory.BLOCKS, pls.getLocation().getX(), pls.getLocation().getY(), pls.getLocation().getZ(), 1, 1);

@@ -31,6 +31,8 @@ public class TaupeGunExecutor implements CommandExecutor, TabCompleter {
                     return new AddPlayer(this).handle(sender, args);
                 if (args[0].equalsIgnoreCase("list"))
                     return new fr.SPFF.TaupeGun.commands.taupegun.List(this).handle(sender);
+                if (args[0].equalsIgnoreCase("name"))
+                    return new Name(this).handle(sender, args);
                 if (args[0].equalsIgnoreCase("random"))
                     return new Random(this).handle(sender, args);
                 if (args[0].equalsIgnoreCase("reload"))
@@ -57,6 +59,8 @@ public class TaupeGunExecutor implements CommandExecutor, TabCompleter {
                     return new AddPlayer(this).handle(player, args);
                 if (args[0].equalsIgnoreCase("list"))
                     return new fr.SPFF.TaupeGun.commands.taupegun.List(this).handle(player);
+                if (args[0].equalsIgnoreCase("name"))
+                    return new Name(this).handle(player, args);
                 if (args[0].equalsIgnoreCase("random"))
                     return new Random(this).handle(player, args);
                 if (args[0].equalsIgnoreCase("reload"))
@@ -80,29 +84,38 @@ public class TaupeGunExecutor implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] args) {
         if (args.length == 1) {
-            final String[] completions0 = {"addplayer", "list", "random", "reload", "removeplayer", "spawn", "start", "stop"};
+            final String[] completions0 = {"addplayer", "list", "name", "random", "reload", "removeplayer", "spawn", "start", "stop"};
             final List<String> completions = new ArrayList<>();
             for (final String alias : completions0) {
-                if (commandSender.hasPermission("taupegun." + alias) && alias.startsWith(args[0]))
+                if (commandSender.hasPermission("taupegun." + alias) && alias.toLowerCase().startsWith(args[0].toLowerCase()))
                     completions.add(alias);
             }
             return completions;
-        } else if (args.length == 2) {
+        }
+        if (args.length == 2) {
             if (commandSender.hasPermission("taupegun." + args[0])) {
                 List<String> completions = new ArrayList<>();
                 if (args[0].equalsIgnoreCase("addplayer") || args[0].equalsIgnoreCase("removeplayer")) {
                     for (final Player player : this.main.getServer().getOnlinePlayers()) {
-                        if (player.getName().toLowerCase().startsWith(args[1])) completions.add(player.getName());
+                        if (player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
+                            completions.add(player.getName());
+                    }
+                } else if (args[0].equalsIgnoreCase("name")) {
+                    for (final Teams teams : Teams.getTeams()) {
+                        if (teams.getName().toLowerCase().startsWith(args[1].toLowerCase()))
+                            completions.add(teams.getName());
                     }
                 }
                 return completions;
             }
-        } else if (args.length == 3) {
+        }
+        if (args.length == 3) {
             if (commandSender.hasPermission("taupegun." + args[0])) {
                 List<String> completions = new ArrayList<>();
                 if (args[0].equalsIgnoreCase("addplayer")) {
                     for (final Teams teams : Teams.getTeams()) {
-                        if (teams.getName().toLowerCase().startsWith(args[2])) completions.add(teams.getName());
+                        if (teams.getName().toLowerCase().startsWith(args[2].toLowerCase()))
+                            completions.add(teams.getName());
                     }
                 }
                 return completions;

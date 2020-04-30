@@ -10,7 +10,7 @@ public class MathUtils {
     }
 
     public static Integer getDistance(final Location start, final Location stop){
-        return (int) Math.ceil(Math.sqrt(Math.pow(start.getX() - stop.getX(), 2) + Math.pow(start.getZ() - stop.getZ(), 2)));
+        return (int) Math.floor(Math.sqrt(Math.pow(start.getX() - stop.getX(), 2) + Math.pow(start.getZ() - stop.getZ(), 2)));
     }
 
     public static Integer getFlatDistance(final Location start, final Location stop){

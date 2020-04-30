@@ -1,10 +1,7 @@
 package fr.SPFF.TaupeGun.game;
 
 import fr.SPFF.TaupeGun.plugin.TaupeGunPlugin;
-import fr.SPFF.TaupeGun.utils.ActionbarUtils;
-import fr.SPFF.TaupeGun.utils.MathUtils;
-import fr.SPFF.TaupeGun.utils.Message;
-import fr.SPFF.TaupeGun.utils.MiscUtils;
+import fr.SPFF.TaupeGun.utils.*;
 import net.minecraft.server.v1_15_R1.PacketPlayOutNamedSoundEffect;
 import net.minecraft.server.v1_15_R1.SoundCategory;
 import net.minecraft.server.v1_15_R1.SoundEffects;
@@ -13,9 +10,14 @@ import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.*;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,7 +32,8 @@ public class TaupeGunManager {
     private Map<Player, Scoreboard> playerScoreboardMap;
     private int timer;
     private int task;
-    public int taupeTime = 10 * 60;
+    public int taupeTime = 10 * 60 * 30;
+    public int borderTime = 10 * 60 * 50 + this.taupeTime;
     private int chronoTask;
 
     private int minutes;
@@ -58,9 +61,13 @@ public class TaupeGunManager {
             player1.teleport(this.main.getFileManager().getFile("data").getLocation("spawn"));
             player1.setGameMode(GameMode.ADVENTURE);
             player1.setHealth(20);
+            player1.setFoodLevel(20);
             player1.setTotalExperience(0);
             player1.getInventory().clear();
             player1.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+            for (PotionEffect potionEffectType : player1.getActivePotionEffects()) {
+                player1.removePotionEffect(potionEffectType.getType());
+            }
         };
         for (final Player player : this.main.getServer().getOnlinePlayers()) {
             if (player.isDead()) {
@@ -75,21 +82,26 @@ public class TaupeGunManager {
     }
 
     public void chronoStart() {
-        AtomicInteger timer = new AtomicInteger(25);
+        AtomicInteger timer = new AtomicInteger(5);
+        if (!this.state.equals(State.WAITING)) return;
+        this.state = State.STARTING;
         this.chronoTask = this.main.getServer().getScheduler().runTaskTimerAsynchronously(this.main, () -> {
-            if (timer.get() < 0) {
-                final int seconds = ((int) Math.ceil(timer.get() * 2D / 10D));
+            if (timer.get() > 0) {
+                final int seconds = ((int) Math.ceil(timer.get()));
                 for (final Player player : this.main.getServer().getOnlinePlayers()) {
-                    ActionbarUtils.sendActionBar(player, "§7Démarrage dans " + seconds + " seconde" + (seconds > 9 ? "s" : ""));
+                    ActionbarUtils.sendActionBar(player, "§4§lDémarrage dans " + seconds);
                 }
             } else if (timer.get() == 0) {
                 Message.create("&3&lTaupe Gun &8&l» &7Que la partie commence !").broadcast();
+                for (final Player player : this.main.getServer().getOnlinePlayers()) {
+                    TitleUtils.send(player, "§c§lTaupe Gun", "§8§o- §7§oPar Aless#6161 §8§o-", 1, 3, 1);
+                }
                 this.main.getServer().getScheduler().runTask(this.main, this::start);
                 this.main.getServer().getScheduler().cancelTask(this.chronoTask);
                 return;
             }
             timer.getAndDecrement();
-        }, 0L, 10L).getTaskId();
+        }, 0L, 20L).getTaskId();
     }
 
     public State getState() {
@@ -120,10 +132,11 @@ public class TaupeGunManager {
                     player.setHealth(20);
                     player.setGameMode(GameMode.SURVIVAL);
                     player.setFoodLevel(20);
+                    player.setTotalExperience(0);
                     player.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 10));
                 });
                 final PlayerTaupe playerTaupe = new PlayerTaupe(player);
-                Teams teams = null;
+                Teams teams;
                 if (random) {
                     teams = (Teams) teamsList.parallelStream().filter(team -> !team.isFull()).toArray()[new Random().nextInt(Math.abs(teamsList.parallelStream().filter(team -> !team.isFull()).toArray().length))];
                     teams.addPlayer(player);
@@ -146,7 +159,7 @@ public class TaupeGunManager {
         this.main.getWorld().getWorldBorder().setSize(1000 * 2);
         this.main.getWorld().setGameRule(GameRule.NATURAL_REGENERATION, false);
         this.main.getWorld().setFullTime(0);
-        this.minutes = 1;
+        this.minutes = 30;
         this.seconds = 0;
         // Tâche qui s'exécute tous les 10emes de secondes.
         this.task = this.main.getServer().getScheduler().scheduleSyncRepeatingTask(this.main, () -> {
@@ -180,15 +193,26 @@ public class TaupeGunManager {
                 }
                 List<PlayerTaupe> addTaupes = new ArrayList<>();
                 for (final Teams teams : Teams.getTeams()) {
-                    final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(teams.getPlayers().parallelStream().findAny().get());
+                    final Optional<Player> player = teams.getPlayers().parallelStream().findAny();
+                    if (!player.isPresent())
+                        continue;
+                    final PlayerTaupe playerTaupe = PlayerTaupe.getPlayerTaupe(player.get());
                     addTaupes.add(playerTaupe);
                 }
                 Teams taupes = new Teams(true);
                 for (final PlayerTaupe playerTaupe : addTaupes) {
                     if (taupes.isFull()) taupes = new Teams(true);
                     taupes.getPlayers().add(playerTaupe.getPlayer());
+                    playerTaupe.getTeam().getPlayers().remove(playerTaupe.getPlayer());
                     playerTaupe.setTaupe(taupes);
+                    if (playerTaupe.getTeam().getPlayers().size() == 0) {
+                        playerTaupe.getPlayer().performCommand("reveal");
+                    }
                 }
+                final Message commandes = Message.create("&3&lTaupe Gun &8&l» &7Rappel de vos commandes : ")
+                        .addLine(" &c- /t <message> : vous permet de communiquer avec les taupes de votre équipe,")
+                        .addLine(" &c- /claim : vous permet d'avoir un kit aléatoirement,")
+                        .addLine(" &c- /reveal : vous vous révélez au grand jour et vous obtenez une pomme d'or");
                 for (final Teams team : Teams.getTeams()) {
                     if (!team.getColor().equals(TeamsColor.TAUPE)) continue;
                     for (final Player taupe : team.getPlayers()) {
@@ -201,21 +225,20 @@ public class TaupeGunManager {
                         for (final Player player : playerList) {
                             message.append("&c").append(player.getDisplayName()).append("&7").append((player.equals(playerList.get(playerList.size() - 1)) ? "." : ", "));
                         }
+                        commandes.sendMessage(taupe);
                         message.sendMessage(taupe);
                         continue;
                     }
                 }
-                Message.create("&3&lTaupe Gun &8&l» &7Les taupes ont reçus leur ordre de mission.").broadcast();
+                Message.create("&3&lTaupe Gun &8&l» &7Les taupes ont reçu leur ordre de mission.").broadcast();
 
                 this.seconds = 0;
                 this.minutes = 50;
             }
-            else if(this.timer == 10 * 60 * 80){
-                if(this.main.getWorld().getWorldBorder().getSize() > 100 && this.timer % 10 == 0){
-                    this.main.getWorld().getWorldBorder().setSize(this.main.getWorld().getWorldBorder().getSize() - 0.5, 1);
-                }
-            }
             if (this.timer % 10 == 0) {
+                if (this.timer >= this.borderTime && this.main.getWorld().getWorldBorder().getSize() > 100) {
+                    this.main.getWorld().getWorldBorder().setSize(this.main.getWorld().getWorldBorder().getSize() - 2, 1);
+                }
                 this.seconds--;
                 if (this.seconds < 0) {
                     this.minutes--;
@@ -225,12 +248,27 @@ public class TaupeGunManager {
             if (this.ifVictory()) {
                 this.main.getServer().getScheduler().cancelTask(this.task);
                 this.task = -1;
-                final Message message = Message.create("&3&lTaupe Gun &7&l» &7Fin de la partie. Victoire de l'équipe " + TeamsColor.getColor(Teams.getTeams().get(0).getColor().getValue()) + Teams.getTeams().get(0).getName()).append(" ");
+                final Consumer<Player> consumer = player -> {
+                    final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.ENTITY_FIREWORK_ROCKET_SHOOT, SoundCategory.BLOCKS, player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 6, 2);
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(sound);
+                    player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
+                };
+                final Message message = Message.create("&3&lTaupe Gun &7&l» &7Fin de la partie. Victoire de l'équipe " + TeamsColor.getColor(Teams.getTeams().get(0).getColor().getValue()) + Teams.getTeams().get(0).getName()).append("&7: ");
                 final List<Player> playerList = new ArrayList<>(Teams.getTeams().get(0).getPlayers());
                 for (final Player player : playerList) {
                     message.append(TeamsColor.getColor(Teams.getTeams().get(0).getColor().getValue()) + "").append(player.getDisplayName()).append("&7").append((player.equals(playerList.get(playerList.size() - 1)) ? "." : ", "));
                 }
                 message.broadcast();
+                for (final Player player : this.main.getServer().getOnlinePlayers()) {
+                    if (player.isDead()) {
+                        this.main.getServer().getScheduler().runTaskLater(this.main, () -> {
+                            player.spigot().respawn();
+                            consumer.accept(player);
+                        }, 2L);
+                    } else {
+                        consumer.accept(player);
+                    }
+                }
                 this.stop();
                 return;
             }
@@ -246,6 +284,7 @@ public class TaupeGunManager {
         this.playerScoreboardMap.forEach((player, scoreboard) -> {
             scoreboard.getObjectives().forEach(Objective::unregister);
             scoreboard.clearSlot(DisplaySlot.SIDEBAR);
+            scoreboard.clearSlot(DisplaySlot.PLAYER_LIST);
             PlayerTaupe.getPlayerTaupeList().remove(PlayerTaupe.getPlayerTaupe(player));
         });
         List<Teams> teams = new ArrayList<>();
@@ -260,35 +299,23 @@ public class TaupeGunManager {
     }
 
     private boolean ifVictory() {
-        if (Teams.getTeams().size() > 2)
-            return false;
-        boolean b = false;
-        for (final Teams teams : Teams.getTeams()) {
-            if (this.timer > this.taupeTime) {
-                if (teams.isTaupe() && Teams.getTeams().size() == 2) {
-                    for (final Player player : teams.getPlayers()) {
-                        if (PlayerTaupe.getPlayerTaupe(player).isReveal())
-                            return false;
-                    }
-                    b = true;
-                }
-            } else if (Teams.getTeams().size() == 2)
-                return false;
-        }
-        return b;
+        return Teams.getTeams().size() <= 1;
     }
 
     private void generateScoreBoard(final Player player) {
         final Location start = player.getLocation();
         final Location stop = new Location(this.main.getWorld(), 0, 0, 0);
         if (this.playerScoreboardMap.containsKey(player)) {
-            this.playerScoreboardMap.get(player).getObjective("taupeGun").unregister();
-            this.playerScoreboardMap.get(player).getObjective("taupeLife").unregister();
+            if (this.playerScoreboardMap.get(player).getObjective(player.getName()) != null)
+                this.playerScoreboardMap.get(player).getObjective(player.getName()).unregister();
         } else {
             this.playerScoreboardMap.put(player, this.main.getServer().getScoreboardManager().getNewScoreboard());
+            if (this.playerScoreboardMap.get(player).getObjective(player.getName()) != null) {
+                this.playerScoreboardMap.get(player).getObjective(player.getName()).unregister();
+            }
         }
         final Scoreboard scoreboard = this.playerScoreboardMap.get(player);
-        final Objective objective = scoreboard.registerNewObjective("taupeGun", "dummy", "§c§lTaupe Gun");
+        final Objective objective = scoreboard.registerNewObjective(player.getName(), "dummy", "§c§lTaupe Gun");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
         objective.getScore("§0").setScore(100);
         objective.getScore("§8§m-----------------").setScore(99);
@@ -303,19 +330,17 @@ public class TaupeGunManager {
         objective.getScore("§5").setScore(89);
         if (this.timer < this.taupeTime) {
             objective.getScore("§cTaupes dans : §7" + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds)).setScore(88);
-        } else if (this.timer < 80 * 60 * 10) {
+        } else if (this.timer < this.borderTime) {
             objective.getScore("§cReduction de la bordure :").setScore(88);
             objective.getScore("       §7" + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds)).setScore(87);
         }
-        final Objective life = scoreboard.registerNewObjective("taupeLife", "health", "taupeLife");
-        life.setRenderType(RenderType.HEARTS);
-        life.setDisplaySlot(DisplaySlot.PLAYER_LIST);
         player.setScoreboard(scoreboard);
 
     }
 
     public enum State {
         WAITING,
+        STARTING,
         STARTED
     }
 

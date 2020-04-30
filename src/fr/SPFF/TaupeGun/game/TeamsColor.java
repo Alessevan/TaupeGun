@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 
 public enum TeamsColor {
 
-    WHITE(0),
+    YELLOW(0),
     DARK_GRAY(1),
     RED(2),
     BLUE(3),
@@ -28,7 +28,7 @@ public enum TeamsColor {
     public static ChatColor getColor(final int value){
         switch(value){
             case 0:
-                return ChatColor.WHITE;
+                return ChatColor.YELLOW;
             case 1:
                 return ChatColor.DARK_GRAY;
             case 2:
@@ -55,7 +55,7 @@ public enum TeamsColor {
     public static TeamsColor fromValue(final int value){
         switch(value){
             case 0:
-                return TeamsColor.WHITE;
+                return TeamsColor.YELLOW;
             case 1:
                 return TeamsColor.DARK_GRAY;
             case 2:

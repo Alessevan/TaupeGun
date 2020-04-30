@@ -17,11 +17,13 @@ import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Random;
+
 public class ClaimExecutor implements CommandExecutor {
 
     private final TaupeGunPlugin main;
 
-    public ClaimExecutor(){
+    public ClaimExecutor() {
         this.main = TaupeGunPlugin.getInstance();
         this.main.getCommand("claim").setExecutor(this);
     }
@@ -57,44 +59,39 @@ public class ClaimExecutor implements CommandExecutor {
         return true;
     }
 
-    private void kitPlayer(final Player player){
-        final double random = Math.random();
-        final int nbKits = 4;
-        for(int i = 0; i < nbKits; i++){
-            if(random <= i * 1D / nbKits){
-                switch (i){
-                    case 0:
-                        player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.BOW, 1));
-                        player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.ARROW, 48));
-                        return;
-                    case 1:
-                        player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.TNT, 1));
-                        player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.FLINT_AND_STEEL, 1));
-                        return;
-                    case 2:
-                        player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.BLAZE_SPAWN_EGG, 3));
-                        final ItemStack fireAspect = new ItemStack(Material.ENCHANTED_BOOK, 1);
-                        final EnchantmentStorageMeta enchantmentStorageMetaFireAspect = (EnchantmentStorageMeta) fireAspect.getItemMeta();
-                        enchantmentStorageMetaFireAspect.addStoredEnchant(Enchantment.FIRE_ASPECT, 1, false);
-                        fireAspect.setItemMeta(enchantmentStorageMetaFireAspect);
-                        player.getLocation().getWorld().dropItem(player.getLocation(), fireAspect);
-                        return;
-                    case 3:
-                        ItemStack potion = new ItemStack(Material.POTION, 1);
-                        PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
-                        potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 3 * 60, 1), true);
-                        potionMeta.setColor(Color.PURPLE);
-                        potion.setItemMeta(potionMeta);
-                        player.getLocation().getWorld().dropItem(player.getLocation(), potion);
-                        potion = new ItemStack(Material.SPLASH_POTION, 1);
-                        potionMeta = (PotionMeta) potion.getItemMeta();
-                        potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.POISON, 45, 1), true);
-                        potionMeta.setColor(Color.GREEN);
-                        potion.setItemMeta(potionMeta);
-                        player.getLocation().getWorld().dropItem(player.getLocation(), potion);
-                        return;
-                }
-            }
+    private void kitPlayer(final Player player) {
+        int i = new Random().nextInt(4);
+        switch (i) {
+            case 0:
+                player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.TNT, 3)).setPickupDelay(0);
+                player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.FLINT_AND_STEEL, 1)).setPickupDelay(0);
+                return;
+            case 1:
+                player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.BLAZE_SPAWN_EGG, 3)).setPickupDelay(0);
+                final ItemStack fireAspect = new ItemStack(Material.ENCHANTED_BOOK, 1);
+                final EnchantmentStorageMeta enchantmentStorageMetaFireAspect = (EnchantmentStorageMeta) fireAspect.getItemMeta();
+                enchantmentStorageMetaFireAspect.addStoredEnchant(Enchantment.FIRE_ASPECT, 1, false);
+                fireAspect.setItemMeta(enchantmentStorageMetaFireAspect);
+                player.getLocation().getWorld().dropItem(player.getLocation(), fireAspect).setPickupDelay(0);
+                return;
+            case 2:
+                ItemStack potion = new ItemStack(Material.POTION, 1);
+                PotionMeta potionMeta = (PotionMeta) potion.getItemMeta();
+                potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 3 * 60, 0), true);
+                potionMeta.setColor(Color.PURPLE);
+                potionMeta.setDisplayName("§cPotion de force I");
+                potion.setItemMeta(potionMeta);
+                player.getLocation().getWorld().dropItem(player.getLocation(), potion).setPickupDelay(0);
+                potion = new ItemStack(Material.SPLASH_POTION, 1);
+                potionMeta = (PotionMeta) potion.getItemMeta();
+                potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.POISON, 45, 0), true);
+                potionMeta.setColor(Color.GREEN);
+                potionMeta.setDisplayName("§aPotion de poison I");
+                potion.setItemMeta(potionMeta);
+                player.getLocation().getWorld().dropItem(player.getLocation(), potion).setPickupDelay(0);
+                return;
         }
+        player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.BOW, 1)).setPickupDelay(0);
+        player.getLocation().getWorld().dropItem(player.getLocation(), new ItemStack(Material.ARROW, 48)).setPickupDelay(0);
     }
 }

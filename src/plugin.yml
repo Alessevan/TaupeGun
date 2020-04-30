@@ -1,14 +1,15 @@
 main: fr.SPFF.TaupeGun.plugin.TaupeGunPlugin
 name: TaupeGunPlugin
-version: 0.1.0
+version: 1.0.0
 api-version: "1.15"
-authors: ['Aless#6161', 'Marco#1398']
+authors: ['Aless#6161']
 load: POSTWORLD
 softdepend: # On charge le plugin ceux là :
   - MultiWorld
   - MultiverseCore
 commands:
   taupegun:
+    aliases: [tg]
     description: "Command to use plugin TaupeGunPlugin"
   t:
     description: "Command for a taupe to speak to others of her taupes' team"

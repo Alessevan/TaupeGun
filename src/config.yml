@@ -1,0 +1,83 @@
+config:
+  world: world
+  random: true
+  teams:
+    normal: 6
+    taupes: 2
+  timer:
+    taupes:
+      seconds: 0
+      minutes: 30
+    border:
+      seconds: 0
+      minutes: 50
+messages:
+  prefix:
+    info: "&3&lTaupe Gun &8&l» &r"
+    error: "&c&lTaupe Gun &4&l» &r"
+    warn: "&3&lTaupe Gun &c&l» &r"
+  info:
+    join: "&7%player% joined the game."
+    left: "&7%player% left the game."
+    starting: "&4&lStarting in %seconds%"
+    start: "&7Let the game begin !"
+    revive: "&7%player% was come back from the dead."
+    heal: "&7You were healed."
+    taupes:
+      commands: "&7Here the list of yours commands :\n &c- /t <message> : to talk with other taupes of your team,
+      \n &c- /claim : get a random kit,\n &c- /reveal : you're coming out in the open and you get a golden apple."
+      allied: "&7You are a &cTaupe&7. Yours allies are : "
+      kit: "&7You've received a random kit."
+    victory: "&7End of the game. Victory of the team "
+    commands:
+      add: "&7%player% is now in the team %team%."
+      list: "&7List of teams : "
+      reload:
+        progress: "&7Reloading..."
+        end: "&7Reload finished."
+      remove: "&7%player% left his team."
+      spawn:
+        progress: "&7Saving..."
+        end: "&7Saved."
+      start: "&7The game is starting thanks to %started%."
+      stop: "&7The game was stopped by %stopper%."
+  error:
+    permission: "&cYou have not the permission to do that."
+    start: "&cThe game isn't started."
+    inGame: "&cYou're not in the game."
+    taupe: "&cYou're not a Taupe."
+    kit: "&cYou already take a kit."
+    reveal: "&cYou are already revealed."
+    write: "&cYou have to write something."
+    spawn: "&cThe spawn isn't define : &4/taupegun spawn&c."
+    alreadyStart: "&cThe game already start. You are a spectator."
+    commands:
+      add:
+        alreadyStart: "&cThe game already start."
+        inTeam: "&cThe player is already in a team."
+        connected: "&cThe player isn't connected."
+        team: "&cThis team doesn't exist."
+      reload:
+        alreadyStart: "&cThe game already start."
+      remove:
+        alreadyStart: "&cThe game already start."
+        inTeam: "&cThe player isn't in a team."
+        connected: "&cThe player isn't connected."
+      start:
+        alreadyStart: "&cThe game already start."
+      stop:
+        start: "&cThe game isn't started."
+  warn:
+    team: "&7A team was destroy !"
+    killed:
+      player: "&c%victim% &7was killed by &c%killer%&7."
+      mysteriously: "&c%victim% &7was killed mysteriously..."
+    taupes:
+      reveal: "&7%player% just revealed his true nature."
+      mission: "&7The taupes have now their mission order."
+scoreboard:
+  center: "&cCenter : &7"
+  border: "&cBorder : &7"
+  timer:
+    taupes: "&cTaupes in : &7"
+    border: "&cEdge reduction in :"

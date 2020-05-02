@@ -11,13 +11,18 @@ config:
     border:
       seconds: 0
       minutes: 50
+  edge:
+    start: 1000
+    end: 100
   actions:
     break:
       iron_ore:
         drop: iron_ingot
+        amount: 1
         xp: 3
       gold_ore:
         drop: gold_ingot
+        amount: 1
         xp: 5
 messages:
   prefix:

@@ -127,7 +127,7 @@ public class TaupeGunManager {
 
     public void start() {
         this.main.getWorld().getWorldBorder().setCenter(this.main.getWorld().getSpawnLocation());
-        this.main.getWorld().getWorldBorder().setSize(1000 * 2);
+        this.main.getWorld().getWorldBorder().setSize(this.main.getFileManager().getFile("config").getInt("config.edge.start") * 2);
         this.main.getWorld().setGameRule(GameRule.NATURAL_REGENERATION, false);
         this.main.getWorld().setFullTime(0);
         this.main.getServer().getScheduler().runTaskAsynchronously(this.main, () -> {
@@ -242,7 +242,7 @@ public class TaupeGunManager {
                 this.minutes = 50;
             }
             if (this.timer % 10 == 0) {
-                if (this.timer >= this.borderTime && this.main.getWorld().getWorldBorder().getSize() > 100) {
+                if (this.timer >= this.borderTime && this.main.getWorld().getWorldBorder().getSize() > this.main.getFileManager().getFile("config").getInt("config.edge.end")) {
                     this.main.getWorld().getWorldBorder().setSize(this.main.getWorld().getWorldBorder().getSize() - 2, 1);
                 }
                 this.seconds--;

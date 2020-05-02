@@ -7,10 +7,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 
 public class Listening implements Listener {
 
@@ -59,6 +56,11 @@ public class Listening implements Listener {
     @EventHandler
     public void onFoodLevelChange(final FoodLevelChangeEvent e) {
         new FoodLevelChange(this).handle(e);
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(final PlayerTeleportEvent e) {
+        new PlayerTeleport(this).handle(e);
     }
 
     public TaupeGunPlugin getMain() {

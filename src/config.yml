@@ -11,6 +11,14 @@ config:
     border:
       seconds: 0
       minutes: 50
+  actions:
+    break:
+      iron_ore:
+        drop: iron_ingot
+        xp: 3
+      gold_ore:
+        drop: gold_ingot
+        xp: 5
 messages:
   prefix:
     info: "&3&lTaupe Gun &8&l» &r"

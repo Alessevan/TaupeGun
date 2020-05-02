@@ -126,6 +126,10 @@ public class TaupeGunManager {
     }
 
     public void start() {
+        this.main.getWorld().getWorldBorder().setCenter(this.main.getWorld().getSpawnLocation());
+        this.main.getWorld().getWorldBorder().setSize(1000 * 2);
+        this.main.getWorld().setGameRule(GameRule.NATURAL_REGENERATION, false);
+        this.main.getWorld().setFullTime(0);
         this.main.getServer().getScheduler().runTaskAsynchronously(this.main, () -> {
             this.state = State.STARTED;
             List<Player> players = new ArrayList<>(this.main.getServer().getOnlinePlayers());
@@ -164,10 +168,6 @@ public class TaupeGunManager {
                         team.getPlayers().forEach(player -> player.teleport(location)));
             }
         });
-        this.main.getWorld().getWorldBorder().setCenter(this.main.getWorld().getSpawnLocation());
-        this.main.getWorld().getWorldBorder().setSize(1000 * 2);
-        this.main.getWorld().setGameRule(GameRule.NATURAL_REGENERATION, false);
-        this.main.getWorld().setFullTime(0);
         this.minutes = 30;
         this.seconds = 0;
         // Tâche qui s'exécute tous les 10emes de secondes.

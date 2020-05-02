@@ -17,18 +17,19 @@ class BlockBreak {
         if (PlayerTaupe.getPlayerTaupe(e.getPlayer()) == null) {
             return;
         }
-        switch (e.getBlock().getType()) {
-            case IRON_ORE: {
-                e.setDropItems(false);
-                e.getBlock().getLocation().getWorld().dropItemNaturally(e.getBlock().getLocation().add(0.5, 0D, 0.5), new ItemStack(Material.IRON_INGOT));
-                e.setExpToDrop(7);
-                return;
-            }
-            case GOLD_ORE: {
-                e.setDropItems(false);
-                e.getBlock().getLocation().getWorld().dropItemNaturally(e.getBlock().getLocation().add(0.5, 0D, 0.5), new ItemStack(Material.GOLD_INGOT));
-                e.setExpToDrop(10);
-                return;
+        if (this.listening.getMain().getFileManager().getFile("config").get("config.actions.break") != null) {
+            for (final String block : this.listening.getMain().getFileManager().getFile("config").getConfigurationSection("config.actions.break").getKeys(false)) {
+                if (Material.getMaterial(block.toUpperCase()) != null) {
+                    if (e.getBlock().getType().equals(Material.getMaterial(block.toUpperCase()))) {
+                        final int xp = this.listening.getMain().getFileManager().getFile("config").getInt("config.actions.break." + block + ".xp");
+                        e.setExpToDrop(xp);
+                        final Material material = Material.valueOf(this.listening.getMain().getFileManager().getFile("config").getString("config.actions.break." + block + ".drop"));
+                        final int amount = this.listening.getMain().getFileManager().getFile("config").getInt("config.actions.break." + block + ".amount");
+                        e.setDropItems(false);
+                        e.getBlock().getLocation().getWorld().dropItem(e.getBlock().getLocation().add(0.5, 0.5, 0.5), new ItemStack(material, amount));
+                        return;
+                    }
+                }
             }
         }
     }

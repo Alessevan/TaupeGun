@@ -15,8 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.*;
@@ -30,7 +28,7 @@ public class TaupeGunManager {
     public int taupeTime;
     public int borderTime;
     private State state;
-    private Map<Player, Scoreboard> playerScoreboardMap;
+    private Map<Player, ScoreboardSign> playerScoreboardMap;
     private int timer;
     private int task;
     private int chronoTask;
@@ -132,6 +130,8 @@ public class TaupeGunManager {
         this.main.getWorld().getWorldBorder().setSize(this.main.getFileManager().getFile("config").getInt("config.edge.start") * 2);
         this.main.getWorld().setGameRule(GameRule.NATURAL_REGENERATION, false);
         this.main.getWorld().setFullTime(0);
+        this.minutes = this.main.getFileManager().getFile("config").getInt("config.timer.taupes.minutes");
+        this.seconds = this.main.getFileManager().getFile("config").getInt("config.timer.taupes.seconds");
         this.main.getServer().getScheduler().runTaskAsynchronously(this.main, () -> {
             this.state = State.STARTED;
             List<Player> players = new ArrayList<>(this.main.getServer().getOnlinePlayers());
@@ -148,7 +148,7 @@ public class TaupeGunManager {
                     player.setGameMode(GameMode.SURVIVAL);
                     player.setFoodLevel(20);
                     player.setTotalExperience(0);
-                    player.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 10));
+                    player.getInventory().addItem(new ItemStack(Material.getMaterial(this.main.getFileManager().getFile("config").getString("config.start.material")), this.main.getFileManager().getFile("config").getInt("config.start.amount")));
                 });
                 final PlayerTaupe playerTaupe = new PlayerTaupe(player);
                 Teams teams;
@@ -170,8 +170,6 @@ public class TaupeGunManager {
                         team.getPlayers().forEach(player -> player.teleport(location)));
             }
         });
-        this.minutes = 30;
-        this.seconds = 0;
 
         // Tâche qui s'exécute tous les 10emes de secondes.
         this.task = this.main.getServer().getScheduler().scheduleSyncRepeatingTask(this.main, () -> {
@@ -241,8 +239,8 @@ public class TaupeGunManager {
                 }
                 Message.create(this.main.getFileManager().getPrefixWarn("taupes.mission")).broadcast();
 
-                this.seconds = 0;
-                this.minutes = 50;
+                this.seconds = this.main.getFileManager().getFile("config").getInt("config.timer.border.seconds");
+                this.minutes = this.main.getFileManager().getFile("config").getInt("config.timer.border.minutes");
             }
             if (this.timer % 10 == 0) {
                 if (this.timer >= this.borderTime && this.main.getWorld().getWorldBorder().getSize() > this.main.getFileManager().getFile("config").getInt("config.edge.end") * 2) {
@@ -294,11 +292,10 @@ public class TaupeGunManager {
             this.chronoTask = -1;
         }
         this.playerScoreboardMap.forEach((player, scoreboard) -> {
-            scoreboard.getObjectives().forEach(Objective::unregister);
-            scoreboard.clearSlot(DisplaySlot.SIDEBAR);
-            scoreboard.clearSlot(DisplaySlot.PLAYER_LIST);
+            scoreboard.destroy();
             PlayerTaupe.getPlayerTaupeList().remove(PlayerTaupe.getPlayerTaupe(player));
         });
+        this.playerScoreboardMap.clear();
         List<Teams> teams = new ArrayList<>();
         for (Teams value : Teams.getTeams()) {
             teams.add(value);
@@ -317,37 +314,44 @@ public class TaupeGunManager {
     private void generateScoreBoard(final Player player) {
         final Location start = player.getLocation();
         final Location stop = new Location(this.main.getWorld(), 0, 0, 0);
-        if (this.playerScoreboardMap.containsKey(player)) {
-            if (this.playerScoreboardMap.get(player).getObjective(player.getName()) != null)
-                this.playerScoreboardMap.get(player).getObjective(player.getName()).unregister();
-        } else {
-            this.playerScoreboardMap.put(player, this.main.getServer().getScoreboardManager().getNewScoreboard());
-            if (this.playerScoreboardMap.get(player).getObjective(player.getName()) != null) {
-                this.playerScoreboardMap.get(player).getObjective(player.getName()).unregister();
+        if (!this.playerScoreboardMap.containsKey(player)) {
+            this.playerScoreboardMap.put(player, new ScoreboardSign(player, "§c§lTaupe Gun"));
+            ScoreboardSign pointer = this.playerScoreboardMap.get(player);
+            pointer.create();
+            pointer.setLine(0, "§0");
+            pointer.setLine(1, "§8§m-----------------");
+            pointer.setLine(2, "§1");
+            pointer.setLine(3, this.main.getFileManager().getMessage("scoreboard.center") + MathUtils.getFlatDistance(start, stop) + " " + MathUtils.getDirection(start, stop));
+            pointer.setLine(4, "§2");
+            pointer.setLine(5, "§0§8§m-----------------");
+            pointer.setLine(6, "§3");
+            pointer.setLine(7, this.main.getFileManager().getMessage("scoreboard.border") + (int) Math.ceil(this.main.getWorld().getWorldBorder().getSize() / 2));
+            pointer.setLine(8, "§4");
+            pointer.setLine(9, "§1§8§m-----------------");
+            pointer.setLine(10, "§5");
+            if (this.timer < this.taupeTime) {
+                pointer.setLine(11, this.main.getFileManager().getMessage("scoreboard.timer.taupes") + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds));
+            } else if (this.timer < this.borderTime) {
+                pointer.setLine(11, "§cReduction de la bordure :");
+                pointer.setLine(12, "       §7" + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds));
             }
         }
-        final Scoreboard scoreboard = this.playerScoreboardMap.get(player);
-        final Objective objective = scoreboard.registerNewObjective(player.getName(), "dummy", "§c§lTaupe Gun");
-        objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.getScore("§0").setScore(100);
-        objective.getScore("§8§m-----------------").setScore(99);
-        objective.getScore("§1").setScore(98);
-        objective.getScore(this.main.getFileManager().getMessage("scoreboard.center") + MathUtils.getFlatDistance(start, stop) + " " + MathUtils.getDirection(start, stop)).setScore(96);
-        objective.getScore("§2").setScore(95);
-        objective.getScore("§0§8§m-----------------").setScore(94);
-        objective.getScore("§3").setScore(93);
-        objective.getScore(this.main.getFileManager().getMessage("scoreboard.border") + (int) Math.ceil(this.main.getWorld().getWorldBorder().getSize() / 2)).setScore(92);
-        objective.getScore("§4").setScore(91);
-        objective.getScore("§1§8§m-----------------").setScore(90);
-        objective.getScore("§5").setScore(89);
+        final ScoreboardSign scoreboardSign = this.playerScoreboardMap.get(player);
+        scoreboardSign.setLine(3, this.main.getFileManager().getMessage("scoreboard.center") + MathUtils.getFlatDistance(start, stop) + " " + MathUtils.getDirection(start, stop));
+        scoreboardSign.setLine(7, this.main.getFileManager().getMessage("scoreboard.border") + (int) Math.ceil(this.main.getWorld().getWorldBorder().getSize() / 2));
         if (this.timer < this.taupeTime) {
-            objective.getScore(this.main.getFileManager().getMessage("scoreboard.timer.taupes") + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds)).setScore(88);
+            scoreboardSign.setLine(11, this.main.getFileManager().getMessage("scoreboard.timer.taupes") + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds));
         } else if (this.timer < this.borderTime) {
-            objective.getScore(this.main.getFileManager().getMessage("scoreboard.timer.border")).setScore(88);
-            objective.getScore("       §7" + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds)).setScore(87);
+            scoreboardSign.setLine(11, this.main.getFileManager().getMessage("scoreboard.timer.border"));
+            scoreboardSign.setLine(12, "       §7" + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds));
+        } else {
+            if (scoreboardSign.getLine(11) != null || !scoreboardSign.getLine(11).equalsIgnoreCase("")) {
+                scoreboardSign.removeLine(11);
+            }
+            if (scoreboardSign.getLine(12) != null || !scoreboardSign.getLine(12).equalsIgnoreCase("")) {
+                scoreboardSign.removeLine(11);
+            }
         }
-        player.setScoreboard(scoreboard);
-
     }
 
     public enum State {

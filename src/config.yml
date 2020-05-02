@@ -14,6 +14,9 @@ config:
   edge:
     start: 1000
     end: 100
+  start:
+    material: cooked_beef
+    amount: 10
   actions:
     break:
       iron_ore:

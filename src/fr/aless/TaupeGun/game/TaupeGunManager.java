@@ -98,6 +98,8 @@ public class TaupeGunManager {
             } else if (timer.get() == 0) {
                 Message.create(this.main.getFileManager().getPrefixMessage("start")).broadcast();
                 for (final Player player : this.main.getServer().getOnlinePlayers()) {
+                    final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.EVENT_RAID_HORN, SoundCategory.MASTER, player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 1, 1);
+                    ((CraftPlayer) player).getHandle().playerConnection.sendPacket(sound);
                     TitleUtils.send(player, "§c§lTaupe Gun", "§8§o- §7§oBy Aless §8§o-", 1, 3, 1);
                 }
                 this.main.getServer().getScheduler().runTask(this.main, this::start);
@@ -170,6 +172,7 @@ public class TaupeGunManager {
         });
         this.minutes = 30;
         this.seconds = 0;
+
         // Tâche qui s'exécute tous les 10emes de secondes.
         this.task = this.main.getServer().getScheduler().scheduleSyncRepeatingTask(this.main, () -> {
             for (final Player player : this.main.getServer().getOnlinePlayers()) {
@@ -193,7 +196,7 @@ public class TaupeGunManager {
                 }
             } else if (this.timer == this.taupeTime) {
                 for (final Player pls : this.main.getServer().getOnlinePlayers()) {
-                    final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.ENTITY_CAT_DEATH, SoundCategory.BLOCKS, pls.getLocation().getX(), pls.getLocation().getY(), pls.getLocation().getZ(), 1, 1);
+                    final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.ENTITY_CAT_DEATH, SoundCategory.MASTER, pls.getLocation().getX(), pls.getLocation().getY(), pls.getLocation().getZ(), 1, 1);
                     ((CraftPlayer) pls).getHandle().playerConnection.sendPacket(sound);
                     if (PlayerTaupe.getPlayerTaupe(pls) != null) {
                         pls.setHealth(20);
@@ -242,7 +245,7 @@ public class TaupeGunManager {
                 this.minutes = 50;
             }
             if (this.timer % 10 == 0) {
-                if (this.timer >= this.borderTime && this.main.getWorld().getWorldBorder().getSize() > this.main.getFileManager().getFile("config").getInt("config.edge.end")) {
+                if (this.timer >= this.borderTime && this.main.getWorld().getWorldBorder().getSize() > this.main.getFileManager().getFile("config").getInt("config.edge.end") * 2) {
                     this.main.getWorld().getWorldBorder().setSize(this.main.getWorld().getWorldBorder().getSize() - 2, 1);
                 }
                 this.seconds--;
@@ -255,7 +258,7 @@ public class TaupeGunManager {
                 this.main.getServer().getScheduler().cancelTask(this.task);
                 this.task = -1;
                 final Consumer<Player> consumer = player -> {
-                    final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.ENTITY_FIREWORK_ROCKET_SHOOT, SoundCategory.BLOCKS, player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 6, 2);
+                    final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.ENTITY_FIREWORK_ROCKET_SHOOT, SoundCategory.MASTER, player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 6, 2);
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(sound);
                     player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.FIREWORK);
                 };

@@ -77,6 +77,11 @@ public class Teams {
         }
         this.players.clear();
         Teams.teamsList.remove(this);
+        try {
+            finalize();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
     }
 
     public String getName() {

@@ -91,12 +91,12 @@ public class TaupeGunManager {
             if (timer.get() > 0) {
                 final int seconds = ((int) Math.ceil(timer.get()));
                 for (final Player player : this.main.getServer().getOnlinePlayers()) {
-                    ActionbarUtils.sendActionBar(player, this.main.getFileManager().getPrefixMessage("seconds").replace("seconds", String.valueOf(seconds)));
+                    ActionbarUtils.sendActionBar(player, this.main.getFileManager().getPrefixMessage("starting").replace("%seconds%", String.valueOf(seconds)));
                 }
             } else if (timer.get() == 0) {
                 Message.create(this.main.getFileManager().getPrefixMessage("start")).broadcast();
                 for (final Player player : this.main.getServer().getOnlinePlayers()) {
-                    final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.EVENT_RAID_HORN, SoundCategory.MASTER, player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 1, 1);
+                    final PacketPlayOutNamedSoundEffect sound = new PacketPlayOutNamedSoundEffect(SoundEffects.EVENT_RAID_HORN, SoundCategory.MASTER, player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 10000, 1);
                     ((CraftPlayer) player).getHandle().playerConnection.sendPacket(sound);
                     TitleUtils.send(player, "§c§lTaupe Gun", "§8§o- §7§oBy Aless §8§o-", 1, 3, 1);
                 }
@@ -135,7 +135,7 @@ public class TaupeGunManager {
         this.main.getServer().getScheduler().runTaskAsynchronously(this.main, () -> {
             this.state = State.STARTED;
             List<Player> players = new ArrayList<>(this.main.getServer().getOnlinePlayers());
-            final boolean random = this.main.getFileManager().getFile("data").getBoolean("random");
+            final boolean random = this.main.getFileManager().getFile("config").getBoolean("config.random");
             final List<Teams> teamsList = MiscUtils.shuffleTeams(Teams.getTeams());
             if (random) {
                 players = MiscUtils.shufflePlayers(players);
@@ -148,7 +148,7 @@ public class TaupeGunManager {
                     player.setGameMode(GameMode.SURVIVAL);
                     player.setFoodLevel(20);
                     player.setTotalExperience(0);
-                    player.getInventory().addItem(new ItemStack(Material.getMaterial(this.main.getFileManager().getFile("config").getString("config.start.material")), this.main.getFileManager().getFile("config").getInt("config.start.amount")));
+                    player.getInventory().addItem(new ItemStack(Material.getMaterial(this.main.getFileManager().getFile("config").getString("config.start.material").toUpperCase()), this.main.getFileManager().getFile("config").getInt("config.start.amount")));
                 });
                 final PlayerTaupe playerTaupe = new PlayerTaupe(player);
                 Teams teams;
@@ -174,6 +174,9 @@ public class TaupeGunManager {
         // Tâche qui s'exécute tous les 10emes de secondes.
         this.task = this.main.getServer().getScheduler().scheduleSyncRepeatingTask(this.main, () -> {
             for (final Player player : this.main.getServer().getOnlinePlayers()) {
+                if(!player.getGameMode().equals(GameMode.SPECTATOR) && PlayerTaupe.getPlayerTaupe(player) == null){
+                    player.setGameMode(GameMode.SPECTATOR);
+                }
                 generateScoreBoard(player);
             }
             if (this.timer < this.taupeTime) {
@@ -279,6 +282,22 @@ public class TaupeGunManager {
                 this.stop();
                 return;
             }
+            if(PlayerTaupe.getPlayerTaupeList().size() == 0){
+                this.stop();
+                return;
+            }
+            List<Teams> teams = new ArrayList<>(Teams.getTeams());
+            for(final Teams team : teams){
+                if(team.getPlayers().size() == 0) {
+                    for(final PlayerTaupe playerTaupe : PlayerTaupe.getPlayerTaupeList()){
+                        if(playerTaupe.isTaupe() && !playerTaupe.isReveal() && playerTaupe.getTeam().equals(team)){
+                            playerTaupe.getPlayer().performCommand("reveal");
+                            break;
+                        }
+                    }
+                    team.destroy();
+                }
+            }
             this.timer++;
         }, 0L, 2L);
     }
@@ -332,7 +351,7 @@ public class TaupeGunManager {
             if (this.timer < this.taupeTime) {
                 pointer.setLine(11, this.main.getFileManager().getMessage("scoreboard.timer.taupes") + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds));
             } else if (this.timer < this.borderTime) {
-                pointer.setLine(11, "§cReduction de la bordure :");
+                pointer.setLine(11, this.main.getFileManager().getMessage("scoreboard.timer.border"));
                 pointer.setLine(12, "       §7" + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds));
             }
         }
@@ -344,12 +363,12 @@ public class TaupeGunManager {
         } else if (this.timer < this.borderTime) {
             scoreboardSign.setLine(11, this.main.getFileManager().getMessage("scoreboard.timer.border"));
             scoreboardSign.setLine(12, "       §7" + (this.minutes < 10 ? "0" + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? "0" + this.seconds : this.seconds));
-        } else {
+        } else if (this.timer == this.borderTime) {
             if (scoreboardSign.getLine(11) != null || !scoreboardSign.getLine(11).equalsIgnoreCase("")) {
                 scoreboardSign.removeLine(11);
             }
             if (scoreboardSign.getLine(12) != null || !scoreboardSign.getLine(12).equalsIgnoreCase("")) {
-                scoreboardSign.removeLine(11);
+                scoreboardSign.removeLine(12);
             }
         }
     }

@@ -1,6 +1,6 @@
 main: fr.aless.TaupeGun.plugin.TaupeGunPlugin
 name: TaupeGunPlugin
-version: 1.3.0
+version: 1.3.2
 api-version: "1.15"
 authors: ['Aless#6161']
 load: POSTWORLD

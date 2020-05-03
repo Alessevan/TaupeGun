@@ -37,7 +37,7 @@ class PlayerDeath {
             e.getEntity().spigot().respawn();
         }, 2L);
         if (playerTaupe.getTeam().getPlayers().size() == 0 && !playerTaupe.isTaupe()) {
-            Message.create(this.listening.getMain().getFileManager().getPrefixWarn("warn.team")).broadcast();
+            Message.create(this.listening.getMain().getFileManager().getPrefixWarn("team")).broadcast();
             playerTaupe.getTeam().destroy();
             PlayerTaupe.getPlayerTaupeList().remove(playerTaupe);
             playerTaupe.setTaupe(null);
@@ -51,7 +51,7 @@ class PlayerDeath {
             playerTaupe.setTeam(null);
             return;
         } else if (playerTaupe.isTaupe() && playerTaupe.getTaupe().getPlayers().size() == 0) {
-            Message.create(this.listening.getMain().getFileManager().getPrefixWarn("warn.team")).broadcast();
+            Message.create(this.listening.getMain().getFileManager().getPrefixWarn("team")).broadcast();
             playerTaupe.getTaupe().removePlayer(playerTaupe.getPlayer());
             playerTaupe.getTaupe().destroy();
             PlayerTaupe.getPlayerTaupeList().remove(playerTaupe);

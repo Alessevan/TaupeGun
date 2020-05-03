@@ -30,7 +30,7 @@ class PlayerQuit {
                 if (playerTaupe.isTaupe()) {
                     playerTaupe.getTaupe().removePlayer(playerTaupe.getPlayer());
                     if (playerTaupe.getTaupe().getPlayers().size() == 0) {
-                        Message.create(this.listening.getMain().getFileManager().getPrefixWarn("warn.team")).broadcast();
+                        Message.create(this.listening.getMain().getFileManager().getPrefixWarn("team")).broadcast();
                         playerTaupe.getTaupe().destroy();
                         PlayerTaupe.getPlayerTaupeList().remove(playerTaupe);
                         playerTaupe.setTeam(null);
@@ -39,7 +39,7 @@ class PlayerQuit {
                 }
                 e.setQuitMessage(this.listening.getMain().getFileManager().getPrefixMessage("left").replace("%player%", e.getPlayer().getDisplayName()));
                 if (playerTaupe.getTeam().getPlayers().size() == 0) {
-                    Message.create(this.listening.getMain().getFileManager().getPrefixWarn("warn.team")).broadcast();
+                    Message.create(this.listening.getMain().getFileManager().getPrefixWarn("team")).broadcast();
                     playerTaupe.getTeam().destroy();
                     PlayerTaupe.getPlayerTaupeList().remove(playerTaupe);
                     playerTaupe.setTeam(null);

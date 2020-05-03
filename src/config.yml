@@ -59,6 +59,7 @@ messages:
       stop: "&7The game was stopped by %stopper%."
   error:
     permission: "&cYou have not the permission to do that."
+    command: "&cYou can't execute that command while a game is started."
     start: "&cThe game isn't started."
     inGame: "&cYou're not in the game."
     taupe: "&cYou're not a Taupe."

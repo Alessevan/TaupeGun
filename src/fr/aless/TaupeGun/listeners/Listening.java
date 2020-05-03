@@ -1,6 +1,7 @@
 package fr.aless.TaupeGun.listeners;
 
 import fr.aless.TaupeGun.plugin.TaupeGunPlugin;
+import fr.aless.TaupeGun.utils.Message;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -61,6 +62,11 @@ public class Listening implements Listener {
     @EventHandler
     public void onPlayerTeleport(final PlayerTeleportEvent e) {
         new PlayerTeleport(this).handle(e);
+    }
+
+    @EventHandler
+    public void onPlayerPerform(final PlayerCommandPreprocessEvent e){
+        //new PlayerCommandPreprocess(this).handle(e);
     }
 
     public TaupeGunPlugin getMain() {

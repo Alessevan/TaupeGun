@@ -41,12 +41,12 @@ public class TaupeGunPlugin extends JavaPlugin {
         } catch (IOException | InvalidConfigurationException e) {
             this.getLogger().log(Level.SEVERE, ChatColor.translateAlternateColorCodes('&', "§c§lTaupe Gun §4§l» §cError while retrieve creating files ."), e);
         }
-        if (this.getServer().getWorlds().parallelStream().noneMatch(world -> world.getName().equalsIgnoreCase(this.fileManager.getFile("config").getString("world")))) {
+        if (this.getServer().getWorlds().parallelStream().noneMatch(world -> world.getName().equalsIgnoreCase(this.fileManager.getFile("config").getString("config.world")))) {
             this.getLogger().log(Level.SEVERE, ChatColor.translateAlternateColorCodes('&', "§c§lTaupe Gun §4§l» §c§lUnknown world in config.yml"));
             this.getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        this.world = this.getServer().getWorlds().parallelStream().filter(world -> world.getName().equalsIgnoreCase(this.fileManager.getFile("config").getString("world"))).findFirst().get();
+        this.world = this.getServer().getWorlds().parallelStream().filter(world -> world.getName().equalsIgnoreCase(this.fileManager.getFile("config").getString("config.world"))).findFirst().get();
         this.getLogger().info("\n" +
                 "___________                              ________              \n" +
                 "\\__    ___/____   __ ________   ____    /  _____/ __ __  ____  \n" +

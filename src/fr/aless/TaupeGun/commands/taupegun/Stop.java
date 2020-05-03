@@ -19,7 +19,7 @@ class Stop {
         }
         if (!this.executor.getMain().getTaupeGunManager().getState().equals(TaupeGunManager.State.WAITING)) {
             this.executor.getMain().getTaupeGunManager().stop();
-            Message.create(this.executor.getMain().getFileManager().getPrefixMessage("commands.stop").replace("%stopped%", commandSender.getName())).broadcast();
+            Message.create(this.executor.getMain().getFileManager().getPrefixMessage("commands.stop").replace("%stopper%", commandSender.getName())).broadcast();
             return true;
         } else {
             Message.create(this.executor.getMain().getFileManager().getPrefixError("commands.stop.start")).broadcast();

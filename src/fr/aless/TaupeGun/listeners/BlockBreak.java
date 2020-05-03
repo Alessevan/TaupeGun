@@ -23,7 +23,7 @@ class BlockBreak {
                     if (e.getBlock().getType().equals(Material.getMaterial(block.toUpperCase()))) {
                         final int xp = this.listening.getMain().getFileManager().getFile("config").getInt("config.actions.break." + block + ".xp");
                         e.setExpToDrop(xp);
-                        final Material material = Material.valueOf(this.listening.getMain().getFileManager().getFile("config").getString("config.actions.break." + block + ".drop"));
+                        final Material material = Material.getMaterial(this.listening.getMain().getFileManager().getFile("config").getString("config.actions.break." + block + ".drop").toUpperCase());
                         final int amount = this.listening.getMain().getFileManager().getFile("config").getInt("config.actions.break." + block + ".amount");
                         e.setDropItems(false);
                         e.getBlock().getLocation().getWorld().dropItem(e.getBlock().getLocation().add(0.5, 0.5, 0.5), new ItemStack(material, amount));
